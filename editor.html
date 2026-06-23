@@ -192,7 +192,7 @@
         </div>
         <div class="header-right">
             <a href="index.html" style="color:#e94560; text-decoration:none; font-weight:600;">← На главную</a>
-            <span class="user-icon">👤</span>
+            <span class="user-icon" id="userDisplay">👤</span>
         </div>
     </header>
 
@@ -207,7 +207,7 @@
         <!-- Статусное сообщение -->
         <div id="statusMessage" class="status-message"></div>
 
-        <form id="loreForm">
+        <form id="loreForm" onsubmit="return false;">
 
             <!-- Имя автора -->
             <div class="form-group">
@@ -272,6 +272,8 @@
                     <button onclick="selectEmoji('🧪')">🧪</button>
                     <button onclick="selectEmoji('🔭')">🔭</button>
                     <button onclick="selectEmoji('📡')">📡</button>
+                    <button onclick="selectEmoji('🌑')">🌑</button>
+                    <button onclick="selectEmoji('💫')">💫</button>
                 </div>
                 <div class="hint">Нажми «Выбрать», чтобы открыть список эмодзи</div>
             </div>
@@ -316,17 +318,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ===== КОНФИГ FIREBASE =====
+        // ============================================================
+        // КОНФИГ FIREBASE (ВСТАВЬ СВОЙ!)
+        // ============================================================
         const firebaseConfig = {
-          apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
-          authDomain: "fanlogya.firebaseapp.com",
-          projectId: "fanlogya",
-          storageBucket: "fanlogya.firebasestorage.app",
-          messagingSenderId: "448128302344",
-          appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
         };
 
-        fir ebase.initializeApp(firebaseConfig);
+        // ИНИЦИАЛИЗАЦИЯ
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
@@ -335,11 +340,14 @@
         // ===== СЛЕДИМ ЗА ПОЛЬЗОВАТЕЛЕМ =====
         auth.onAuthStateChanged(user => {
             currentUser = user;
+            const display = document.getElementById('userDisplay');
             if (user) {
                 const name = user.displayName || user.email || 'Пользователь';
-                document.querySelector('.user-icon').textContent = '👤 ' + name;
+                display.textContent = '👤 ' + name;
+                document.getElementById('publishBtn').disabled = false;
             } else {
-                document.querySelector('.user-icon').textContent = '👤';
+                display.textContent = '👤 Гость';
+                document.getElementById('publishBtn').disabled = true;
             }
         });
 
@@ -357,6 +365,7 @@
             document.getElementById('emojiPicker').style.display = 'none';
         }
 
+        // ===== ПРЕДПРОСМОТР =====
         function previewLore() {
             const title = document.getElementById('title').value || 'Без названия';
             const icon = document.getElementById('icon').value || '📖';
@@ -366,7 +375,7 @@
             const author = document.getElementById('author').value || 'Аноним';
 
             let html = `
-                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
                     <span style="font-size:4rem;">${icon}</span>
                     <div>
                         <h2 style="color:#f5a623; font-size:1.8rem;">${title}</h2>
@@ -381,8 +390,10 @@
 
             document.getElementById('previewContent').innerHTML = html;
             document.getElementById('previewArea').classList.add('active');
+            document.getElementById('previewArea').scrollIntoView({ behavior: 'smooth' });
         }
 
+        // ===== ПРОСТОЙ ПАРСЕР МАРКДАУНА =====
         function renderMarkdown(text) {
             text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
@@ -399,6 +410,7 @@
             return '<p>' + text + '</p>';
         }
 
+        // ===== ОЧИСТКА ФОРМЫ =====
         function clearForm() {
             document.getElementById('title').value = '';
             document.getElementById('universe').value = '';
@@ -406,20 +418,26 @@
             document.getElementById('content').value = '';
             document.getElementById('author').value = 'Фанат Fanlogya';
             document.getElementById('previewArea').classList.remove('active');
-            document.getElementById('statusMessage').className = 'status-message';
-            document.getElementById('statusMessage').textContent = '';
+            const status = document.getElementById('statusMessage');
+            status.className = 'status-message';
+            status.textContent = '';
+            // Прокручиваем вверх
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ===== ПОКАЗАТЬ СТАТУС =====
         function showStatus(message, type) {
             const el = document.getElementById('statusMessage');
             el.textContent = message;
             el.className = 'status-message ' + type;
+            el.scrollIntoView({ behavior: 'smooth' });
         }
 
         // ===== ПУБЛИКАЦИЯ =====
         async function publishLore() {
+            // Проверка авторизации
             if (!currentUser) {
-                alert('❌ Войди в аккаунт, чтобы опубликовать хронологию!');
+                showStatus('❌ Войди в аккаунт, чтобы опубликовать хронологию!', 'error');
                 return;
             }
 
@@ -448,10 +466,11 @@
                     genre: document.getElementById('genre').value,
                     icon: document.getElementById('icon').value || '📖',
                     author: document.getElementById('author').value || 'Аноним',
-                    authorId: currentUser ? currentUser.uid : null,
+                    authorId: currentUser.uid,
                     date: new Date().toLocaleDateString('ru-RU'),
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     likes: 0,
+                    pinned: false,
                     content: content
                 };
 
@@ -460,6 +479,7 @@
                 showStatus('🎉 Хронология успешно опубликована в облаке! Теперь её увидят все!', 'success');
                 clearForm();
 
+                // Обновляем библиотеку на главной (если открыта)
                 if (window.opener) {
                     try {
                         window.opener.loadLibrary();
@@ -475,12 +495,20 @@
             publishBtn.textContent = '💾 Опубликовать';
         }
 
+        // ===== КЛИК ВНЕ ЭМОДЗИ-ПИКЕРА =====
         document.addEventListener('click', function(e) {
             const picker = document.getElementById('emojiPicker');
             if (picker.style.display === 'grid') {
                 if (!e.target.closest('.form-group') && !e.target.closest('.btn-secondary')) {
                     picker.style.display = 'none';
                 }
+            }
+        });
+
+        // ===== ОБРАБОТКА КНОПКИ ENTER В ПОЛЯХ =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
             }
         });
     </script>
