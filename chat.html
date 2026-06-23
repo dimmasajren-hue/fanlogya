@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanlogya — Чат</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== СТИЛИ ДЛЯ ЧАТА ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e94560;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        header .logo h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        header .logo span {
+            font-size: 0.65rem;
+            color: #667788;
+        }
+        header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        header .header-right a {
+            color: #e94560;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        header .header-right a:hover {
+            text-decoration: underline;
+        }
+        .user-badge {
+            background: #1a1a3a;
+            padding: 4px 14px;
+            border-radius: 30px;
+            color: #e0e8f0;
+            font-size: 0.8rem;
+            border: 1px solid #2a2a4a;
+        }
+        .user-badge .mod {
+            color: #f5a623;
+            font-weight: 700;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+        .chat-container {
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 100px);
+        }
+
+        /* ===== ОБЛАСТЬ СООБЩЕНИЙ ===== */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            background: #0d0d1a;
+            border-radius: 16px;
+            padding: 16px 20px;
+            border: 1px solid #1a1a3a;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 300px;
+            max-height: calc(100vh - 220px);
+        }
+        .messages-area::-webkit-scrollbar { width: 6px; }
+        .messages-area::-webkit-scrollbar-thumb { background: #e94560; border-radius: 10px; }
+        .messages-area::-webkit-scrollbar-track { background: #0a0a0a; }
+
+        /* ===== СООБЩЕНИЕ ===== */
+        .message {
+            background: #111122;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid #1a1a3a;
+            animation: fadeInMsg 0.2s ease;
+        }
+        @keyframes fadeInMsg {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message .msg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+        .message .msg-author {
+            color: #f5a623;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .message .msg-author .mod-tag {
+            background: #f5a623;
+            color: #0a0a0a;
+            font-size: 0.55rem;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .message .msg-date {
+            color: #445566;
+            font-size: 0.65rem;
+        }
+        .message .msg-text {
+            color: #c0d0e0;
+            font-size: 0.9rem;
+            word-wrap: break-word;
+        }
+        .message .msg-actions {
+            margin-top: 4px;
+        }
+        .message .msg-actions button {
+            background: transparent;
+            border: none;
+            color: #667788;
+            font-size: 0.65rem;
+            cursor: pointer;
+            padding: 1px 8px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        .message .msg-actions button:hover {
+            color: #ef5350;
+            background: #1a1a3a;
+        }
+        .message.system-msg {
+            background: #1a1a3a;
+            border-color: #2a2a4a;
+            text-align: center;
+            color: #667788;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+        .message.system-msg .msg-author {
+            color: #667788;
+        }
+
+        /* ===== ПОЛЕ ВВОДА ===== */
+        .input-area {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px 18px;
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
+            border-radius: 30px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            min-width: 150px;
+        }
+        .input-area input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .input-area input::placeholder {
+            color: #445566;
+        }
+        .input-area button {
+            background: #e94560;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 28px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .input-area button:hover {
+            background: #ff5a7a;
+            transform: scale(1.02);
+        }
+        .input-area button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== СТАТУС ===== */
+        .chat-status {
+            color: #667788;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 4px 0;
+        }
+        .chat-status .online {
+            color: #4caf50;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 600px) {
+            header { padding: 10px 16px; }
+            .chat-container { padding: 10px 12px; height: calc(100vh - 80px); }
+            .messages-area { padding: 10px 14px; max-height: calc(100vh - 180px); }
+            .input-area input { font-size: 0.85rem; padding: 8px 14px; }
+            .input-area button { padding: 8px 18px; font-size: 0.85rem; }
+            .message .msg-text { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ШАПКА ===== -->
+    <header>
+        <div class="logo">
+            <h1>💬 Fanlogya Chat</h1>
+            <span>Общайся с авторами хронологий</span>
+        </div>
+        <div class="header-right">
+            <span class="user-badge" id="userBadge">👤 Гость</span>
+            <a href="index.html">📚 На главную</a>
+        </div>
+    </header>
+
+    <!-- ===== ЧАТ ===== -->
+    <div class="chat-container">
+
+        <div class="chat-status" id="chatStatus">
+            ⏳ Подключение к чату...
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            <div style="text-align:center; color:#445566; padding:40px 0;">
+                💬 Загрузка сообщений...
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Написать сообщение..." maxlength="500" disabled>
+            <button id="sendBtn" disabled>➤ Отправить</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    FIREBASE
+    ============================================================ -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // ============================================================
+        // КОНФИГ FIREBASE
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let messagesUnsubscribe = null;
+
+        // ============================================================
+        // МОДЕРАТОРЫ
+        // ============================================================
+        const MODERATORS = [
+            "CT2bmCrOKvV8NUT7OC1HYt3fhoR2"  // ← ЗАМЕНИ НА СВОЙ!
+        ];
+
+        function isModerator(user) {
+            if (!user) return false;
+            return MODERATORS.includes(user.uid);
+        }
+
+        // ============================================================
+        // ЭЛЕМЕНТЫ
+        // ============================================================
+        const messagesArea = document.getElementById('messagesArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const userBadge = document.getElementById('userBadge');
+        const chatStatus = document.getElementById('chatStatus');
+
+        // ============================================================
+        // ФУНКЦИИ
+        // ============================================================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // ============================================================
+        // ЗАГРУЗКА СООБЩЕНИЙ
+        // ============================================================
+        function loadMessages() {
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+
+            messagesArea.innerHTML = `
+                <div style="text-align:center; color:#445566; padding:40px 0;">
+                    ⏳ Загрузка сообщений...
+                </div>
+            `;
+
+            messagesUnsubscribe = db.collection('chat_messages')
+                .orderBy('timestamp', 'asc')
+                .limit(100)
+                .onSnapshot((snapshot) => {
+                    const messages = [];
+                    snapshot.forEach(doc => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    if (messages.length === 0) {
+                        messagesArea.innerHTML = `
+                            <div style="text-align:center; color:#445566; padding:40px 0;">
+                                💬 Пока нет сообщений. Напиши первым!
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let html = '';
+                    messages.forEach(msg => {
+                        const isSystem = msg.system || false;
+                        const isMod = msg.isMod || false;
+                        const canDelete = currentUser && (isModerator(currentUser) || msg.authorId === currentUser.uid);
+
+                        if (isSystem) {
+                            html += `
+                                <div class="message system-msg">
+                                    <span class="msg-author">📢 Система</span>
+                                    <span class="msg-text">${escapeHtml(msg.text)}</span>
+                                    <span class="msg-date">${formatDate(msg.timestamp)}</span>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="message">
+                                    <div class="msg-header">
+                                        <span class="msg-author">
+                                            ${escapeHtml(msg.author || 'Аноним')}
+                                            ${isMod ? '<span class="mod-tag">🛡️ Модератор</span>' : ''}
+                                        </span>
+                                        <span class="msg-date">${formatDate(msg.timestamp)}</span>
+                                    </div>
+                                    <div class="msg-text">${escapeHtml(msg.text)}</div>
+                                    ${canDelete ? `
+                                        <div class="msg-actions">
+                                            <button onclick="deleteMessage('${msg.id}')">🗑️ Удалить</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }
+                    });
+
+                    messagesArea.innerHTML = html;
+                    scrollToBottom();
+                    chatStatus.innerHTML = `💬 Сообщений: <strong>${messages.length}</strong> | 🟢 Онлайн: <span class="online">●</span>`;
+                }, (error) => {
+                    console.error('Ошибка загрузки сообщений:', error);
+                    messagesArea.innerHTML = `
+                        <div style="text-align:center; color:#e94560; padding:40px 0;">
+                            ❌ Ошибка загрузки сообщений: ${error.message}
+                            <br><br>
+                            <button onclick="loadMessages()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer;">🔄 Попробовать снова</button>
+                        </div>
+                    `;
+                });
+        }
+
+        // ============================================================
+        // ОТПРАВКА СООБЩЕНИЯ
+        // ============================================================
+        async function sendMessage() {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт, чтобы писать в чат!');
+                return;
+            }
+
+            const text = messageInput.value.trim();
+            if (!text) return;
+            if (text.length > 500) {
+                alert('❌ Сообщение слишком длинное (макс. 500 символов)');
+                return;
+            }
+
+            try {
+                const msgData = {
+                    text: text,
+                    author: currentUser.displayName || currentUser.email || 'Пользователь',
+                    authorId: currentUser.uid,
+                    isMod: isModerator(currentUser),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                await db.collection('chat_messages').add(msgData);
+                messageInput.value = '';
+                messageInput.focus();
+            } catch (error) {
+                alert('❌ Ошибка отправки: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // УДАЛЕНИЕ СООБЩЕНИЯ
+        // ============================================================
+        async function deleteMessage(msgId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            if (!confirm('🗑️ Удалить это сообщение?')) return;
+
+            try {
+                const doc = await db.collection('chat_messages').doc(msgId).get();
+                if (!doc.exists) {
+                    alert('❌ Сообщение не найдено');
+                    return;
+                }
+                const data = doc.data();
+                const isMod = isModerator(currentUser);
+                if (!isMod && data.authorId !== currentUser.uid) {
+                    alert('❌ Ты не автор этого сообщения!');
+                    return;
+                }
+                await db.collection('chat_messages').doc(msgId).delete();
+            } catch (error) {
+                alert('❌ Ошибка удаления: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // ОТПРАВКА ПО ENTER
+        // ============================================================
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // ============================================================
+        // АВТОРИЗАЦИЯ
+        // ============================================================
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+
+            if (user) {
+                const name = user.displayName || user.email || 'Пользователь';
+                const isMod = isModerator(user);
+                userBadge.innerHTML = `👤 ${name} ${isMod ? '<span class="mod">🛡️ Модератор</span>' : ''}`;
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                messageInput.placeholder = 'Написать сообщение...';
+            } else {
+                userBadge.textContent = '👤 Гость';
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                messageInput.placeholder = '🔐 Войди, чтобы писать в чат';
+                chatStatus.innerHTML = '🔐 <a href="login.html" style="color:#e94560;">Войди</a>, чтобы участвовать в чате';
+            }
+
+            // Перезагружаем сообщения при смене пользователя
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+            loadMessages();
+        });
+
+        // ============================================================
+        // КНОПКА ОТПРАВКИ
+        // ============================================================
+        sendBtn.addEventListener('click', sendMessage);
+
+        // ============================================================
+        // СБОРЩИК МУСОРА ПРИ ЗАКРЫТИИ
+        // ============================================================
+        window.addEventListener('beforeunload', () => {
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+        });
+
+        // ============================================================
+        // СТАРТ
+        // ============================================================
+        console.log('💬 Fanlogya Chat загружен!');
+    </script>
+
+</body>
+</html>
