@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanlogya — Вход</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 40px 30px;
+            background: #0d0d1a;
+            border-radius: 20px;
+            border: 1px solid #1a1a3a;
+        }
+        .auth-container h1 {
+            color: #f5a623;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .auth-container p {
+            text-align: center;
+            color: #8899aa;
+            margin-bottom: 24px;
+        }
+        .auth-container .form-group {
+            margin-bottom: 16px;
+        }
+        .auth-container .form-group label {
+            display: block;
+            color: #e0e8f0;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        .auth-container .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+        .auth-container .form-group input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #e94560;
+            color: #fff;
+            margin-top: 8px;
+        }
+        .btn-auth:hover {
+            background: #ff5a7a;
+            transform: scale(1.02);
+        }
+        .btn-auth.secondary {
+            background: #1a1a3a;
+            border: 1px solid #2a2a4a;
+        }
+        .btn-auth.secondary:hover {
+            background: #2a2a4a;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 16px;
+            color: #667788;
+        }
+        .auth-switch a {
+            color: #e94560;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+        .error-msg {
+            color: #e94560;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+        .success-msg {
+            color: #4caf50;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span class="logo-icon">📱</span>
+            <div>
+                <h1>Fanlogya</h1>
+                <span>Вход в аккаунт</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="index.html" style="color:#e94560; text-decoration:none; font-weight:600;">← На главную</a>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <h1>🔐 Вход</h1>
+        <p>Войди, чтобы создавать и управлять хронологиями</p>
+
+        <div id="errorMsg" class="error-msg"></div>
+        <div id="successMsg" class="success-msg"></div>
+
+        <form id="authForm" onsubmit="return handleAuth(event)">
+            <div id="nameGroup" class="form-group" style="display:none;">
+                <label for="username">👤 Имя (ник)</label>
+                <input type="text" id="username" placeholder="Например: Дима">
+            </div>
+            <div class="form-group">
+                <label for="email">📧 Email</label>
+                <input type="email" id="email" placeholder="Твой email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">🔑 Пароль (минимум 6 символов)</label>
+                <input type="password" id="password" placeholder="Пароль" required minlength="6">
+            </div>
+            <button type="submit" class="btn-auth" id="authBtn">Войти</button>
+        </form>
+
+        <div class="auth-switch">
+            <span id="switchText">Нет аккаунта?</span>
+            <a id="switchLink" onclick="toggleAuthMode()">Зарегистрироваться</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script>
+        // ===== КОНФИГ FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", // ЗАМЕНИ НА СВОЙ!
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        let isLogin = true;
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            const btn = document.getElementById('authBtn');
+            const switchText = document.getElementById('switchText');
+            const switchLink = document.getElementById('switchLink');
+            const nameGroup = document.getElementById('nameGroup');
+
+            if (isLogin) {
+                btn.textContent = 'Войти';
+                switchText.textContent = 'Нет аккаунта?';
+                switchLink.textContent = 'Зарегистрироваться';
+                nameGroup.style.display = 'none';
+            } else {
+                btn.textContent = 'Зарегистрироваться';
+                switchText.textContent = 'Уже есть аккаунт?';
+                switchLink.textContent = 'Войти';
+                nameGroup.style.display = 'block';
+            }
+            clearMessages();
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            clearMessages();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+
+            try {
+                if (isLogin) {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    showSuccess('✅ Вход выполнен! Перенаправление...');
+                } else {
+                    if (!username) {
+                        showError('❌ Введи имя пользователя!');
+                        return;
+                    }
+                    const cred = await auth.createUserWithEmailAndPassword(email, password);
+                    await cred.user.updateProfile({ displayName: username });
+                    showSuccess('✅ Регистрация успешна! Перенаправление...');
+                }
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                showError('❌ ' + error.message);
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        // Проверка, уже вошёл ли пользователь
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

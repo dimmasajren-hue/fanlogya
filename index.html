@@ -89,7 +89,77 @@
             background: #ff5a7a;
         }
 
-        /* Стили для просмотра хронологии прямо на странице (без перехода) */
+        /* ===== СТИЛИ ДЛЯ АККАУНТОВ ===== */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-info .name {
+            color: #e0e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .user-info .logout-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 4px 16px;
+            color: #8899aa;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .user-info .logout-btn:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .auth-btn {
+            background: #e94560;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .auth-btn:hover {
+            background: #ff5a7a;
+            transform: scale(1.05);
+        }
+
+        /* ===== КНОПКИ УПРАВЛЕНИЯ В КАРТОЧКЕ ===== */
+        .lore-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .lore-actions button {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 4px 14px;
+            color: #8899aa;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lore-actions button:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .lore-actions button.delete:hover {
+            border-color: #e94560;
+            background: #e94560;
+            color: #fff;
+        }
+
+        /* ===== ОКНО ПРОСМОТРА ===== */
         .lore-viewer-overlay {
             display: none;
             position: fixed;
@@ -185,6 +255,64 @@
             color: #ddeeff;
         }
 
+        /* ===== НИЖНИЙ БЛОК С ЛАЙКАМИ ===== */
+        .lore-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #1a1a3a;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .like-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 30px;
+            padding: 8px 20px;
+            color: #e0e8f0;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .like-btn:hover {
+            border-color: #e94560;
+            background: #1a1a3a;
+        }
+        .like-btn.liked {
+            border-color: #e94560;
+            background: #e94560;
+            color: #fff;
+        }
+        .like-btn .heart {
+            font-size: 1.2rem;
+        }
+        .like-btn .count {
+            font-weight: 700;
+            min-width: 20px;
+        }
+        .like-btn .heart.empty {
+            color: #667788;
+        }
+        .like-btn.liked .heart.empty {
+            color: #fff;
+        }
+        .lore-meta {
+            display: flex;
+            gap: 16px;
+            color: #667788;
+            font-size: 0.8rem;
+        }
+        .lore-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -208,7 +336,9 @@
         </div>
         <div class="header-right">
             <input type="text" placeholder="🔍 Найти хронологию..." id="searchInput" oninput="searchGames()">
-            <span class="user-icon">👤</span>
+            <div id="userSection">
+                <!-- Сюда вставляется информация о пользователе -->
+            </div>
         </div>
     </header>
 
@@ -266,7 +396,7 @@
 
     </div>
 
-    <!-- ===== ОКНО ПРОСМОТРА ХРОНОЛОГИИ (поверх страницы) ===== -->
+    <!-- ===== ОКНО ПРОСМОТРА ===== -->
     <div id="loreViewerOverlay" class="lore-viewer-overlay" onclick="if(event.target===this) closeLoreViewer()">
         <div class="lore-viewer-box">
             <button class="close-btn" onclick="closeLoreViewer()">✕</button>
@@ -289,25 +419,61 @@
     </footer>
 
     <!-- ============================================================
-    ПОДКЛЮЧЕНИЕ FIREBASE
+    FIREBASE
     ============================================================ -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ===== ВСТАВЬ СВОЙ КОНФИГ FIREBASE =====
+        // ===== КОНФИГ FIREBASE (ВСТАВЬ СВОЙ!) =====
         const firebaseConfig = {
-          apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
-          authDomain: "fanlogya.firebaseapp.com",
-          projectId: "fanlogya",
-          storageBucket: "fanlogya.firebasestorage.app",
-          messagingSenderId: "448128302344",
-          appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
         };
 
-        // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let currentLores = [];
+
+        // ============================================================
+        // УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ
+        // ============================================================
+
+        function updateUserUI(user) {
+            const section = document.getElementById('userSection');
+            if (user) {
+                const name = user.displayName || user.email || 'Пользователь';
+                section.innerHTML = `
+                    <div class="user-info">
+                        <span class="name">👤 ${name}</span>
+                        <button class="logout-btn" onclick="logout()">Выйти</button>
+                    </div>
+                `;
+            } else {
+                section.innerHTML = `
+                    <a href="login.html" class="auth-btn">🔐 Войти</a>
+                `;
+            }
+        }
+
+        async function logout() {
+            await auth.signOut();
+            window.location.reload();
+        }
+
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            updateUserUI(user);
+            loadLibrary();
+        });
 
         // ============================================================
         // ЗАГРУЗКА БИБЛИОТЕКИ
@@ -331,9 +497,12 @@
                     const data = doc.data();
                     lores.push({
                         id: doc.id,
-                        ...data
+                        ...data,
+                        likes: data.likes || 0,
+                        authorId: data.authorId || null
                     });
                 });
+                currentLores = lores;
 
                 if (lores.length === 0) {
                     grid.innerHTML = `
@@ -352,36 +521,53 @@
                     return;
                 }
 
-                // ВСЕ хронологии
+                // ===== ОТОБРАЖЕНИЕ ВСЕХ ХРОНОЛОГИЙ =====
                 let gridHTML = '';
                 lores.forEach(lore => {
+                    const isOwner = currentUser && lore.authorId === currentUser.uid;
                     gridHTML += `
                         <div class="game-card" onclick="openLoreById('${lore.id}')">
                             <span class="icon">${lore.icon || '📖'}</span>
                             <div class="game-title">${escapeHtml(lore.title || 'Без названия')}</div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
-                            <div class="game-rating">★★★★☆</div>
-                            <div class="author-badge">👤 ${escapeHtml(lore.author || 'Аноним')} · ${lore.date || ''}</div>
+                            <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
+                                <span>❤️ ${lore.likes || 0}</span>
+                                <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
+                            </div>
+                            <div class="author-badge">📅 ${lore.date || ''}</div>
+                            ${isOwner ? `
+                                <div class="lore-actions" onclick="event.stopPropagation();">
+                                    <button onclick="deleteLore('${lore.id}')" class="delete">🗑️ Удалить</button>
+                                    <button onclick="editLore('${lore.id}')">✏️ Редактировать</button>
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 });
                 grid.innerHTML = gridHTML;
 
-                // Последние 4
+                // ===== ПОСЛЕДНИЕ 4 =====
                 const recent = lores.slice(0, 4);
                 let recentHTML = '';
                 recent.forEach(lore => {
+                    const isOwner = currentUser && lore.authorId === currentUser.uid;
                     recentHTML += `
                         <div class="game-card" onclick="openLoreById('${lore.id}')">
                             <span class="icon">${lore.icon || '📖'}</span>
                             <div class="game-title">${escapeHtml(lore.title || 'Без названия')}</div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
-                            <div class="game-rating">★★★★☆</div>
-                            <div class="author-badge">👤 ${escapeHtml(lore.author || 'Аноним')}</div>
+                            <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
+                                <span>❤️ ${lore.likes || 0}</span>
+                                <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
+                            </div>
+                            ${isOwner ? `
+                                <div class="lore-actions" onclick="event.stopPropagation();">
+                                    <button onclick="deleteLore('${lore.id}')" class="delete">🗑️</button>
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 });
-                // Добиваем пустыми карточками до 4
                 while (recent.length < 4) {
                     recentHTML += `
                         <div class="game-card add-card" style="opacity:0.3;">
@@ -407,7 +593,55 @@
             }
         }
 
-        // ===== ОТКРЫТЬ ХРОНОЛОГИЮ =====
+        // ============================================================
+        // УДАЛЕНИЕ ХРОНОЛОГИИ
+        // ============================================================
+
+        async function deleteLore(loreId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт, чтобы удалять хронологии!');
+                return;
+            }
+
+            if (!confirm('🗑️ Ты точно хочешь удалить эту хронологию? Это нельзя отменить!')) {
+                return;
+            }
+
+            try {
+                const doc = await db.collection('lores').doc(loreId).get();
+                if (!doc.exists) {
+                    alert('❌ Хронология не найдена!');
+                    return;
+                }
+                if (doc.data().authorId !== currentUser.uid) {
+                    alert('❌ Ты не автор этой хронологии!');
+                    return;
+                }
+
+                await db.collection('lores').doc(loreId).delete();
+                alert('✅ Хронология удалена!');
+                loadLibrary();
+            } catch (error) {
+                alert('❌ Ошибка удаления: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // РЕДАКТИРОВАНИЕ ХРОНОЛОГИИ
+        // ============================================================
+
+        function editLore(loreId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            window.location.href = `editor.html?edit=${loreId}`;
+        }
+
+        // ============================================================
+        // ОТКРЫТИЕ ХРОНОЛОГИИ (С ЛАЙКАМИ)
+        // ============================================================
+
         async function openLoreById(id) {
             const overlay = document.getElementById('loreViewerOverlay');
             const content = document.getElementById('loreViewerContent');
@@ -434,6 +668,9 @@
                 }
 
                 const lore = doc.data();
+                const loreId = doc.id;
+                const likes = lore.likes || 0;
+                const liked = localStorage.getItem('liked_' + loreId) === 'true';
 
                 let html = `
                     <div class="header">
@@ -450,6 +687,18 @@
                     </div>
                     <hr style="border-color:#1a1a3a; margin-bottom:20px;">
                     <div class="content">${renderMarkdown(lore.content || 'Текст хронологии пуст.')}</div>
+
+                    <div class="lore-footer">
+                        <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${loreId}')" id="likeBtn_${loreId}">
+                            <span class="heart ${liked ? '' : 'empty'}">❤️</span>
+                            <span class="count" id="likeCount_${loreId}">${likes}</span>
+                            <span>${liked ? 'Лайкнут' : 'Лайкнуть'}</span>
+                        </button>
+                        <div class="lore-meta">
+                            <span>📅 ${lore.date || 'Неизвестно'}</span>
+                            <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
+                        </div>
+                    </div>
                 `;
 
                 content.innerHTML = html;
@@ -465,18 +714,65 @@
             }
         }
 
+        // ============================================================
+        // ЛАЙКИ
+        // ============================================================
+
+        async function toggleLike(loreId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт, чтобы ставить лайки!');
+                return;
+            }
+
+            const liked = localStorage.getItem('liked_' + loreId) === 'true';
+            try {
+                if (liked) {
+                    localStorage.removeItem('liked_' + loreId);
+                    await db.collection('lores').doc(loreId).update({
+                        likes: firebase.firestore.FieldValue.increment(-1)
+                    });
+                } else {
+                    localStorage.setItem('liked_' + loreId, 'true');
+                    await db.collection('lores').doc(loreId).update({
+                        likes: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
+
+                // Обновляем интерфейс
+                const doc = await db.collection('lores').doc(loreId).get();
+                const newLikes = doc.data().likes || 0;
+                const countEl = document.getElementById('likeCount_' + loreId);
+                if (countEl) countEl.textContent = newLikes;
+
+                const btn = document.getElementById('likeBtn_' + loreId);
+                if (btn) {
+                    const isLiked = localStorage.getItem('liked_' + loreId) === 'true';
+                    btn.classList.toggle('liked', isLiked);
+                    const heart = btn.querySelector('.heart');
+                    if (heart) heart.classList.toggle('empty', !isLiked);
+                    const text = btn.childNodes[btn.childNodes.length - 1];
+                    if (text) text.textContent = isLiked ? 'Лайкнут' : 'Лайкнуть';
+                }
+
+                loadLibrary();
+
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ============================================================
+
         function closeLoreViewer() {
             document.getElementById('loreViewerOverlay').classList.remove('active');
         }
 
-        // ===== ПРОСТОЙ ПАРСЕР МАРКДАУНА =====
         function renderMarkdown(text) {
             if (!text) return '<p>Текст хронологии пуст.</p>';
-
             let html = text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/^### (.*$)/gim, '<h4>$1</h4>')
                 .replace(/^## (.*$)/gim, '<h3>$1</h3>')
                 .replace(/^# (.*$)/gim, '<h2>$1</h2>')
@@ -488,11 +784,9 @@
                 .replace(/(<li>.*<\/li>\n?)+/g, '<ol>$&</ol>')
                 .replace(/---/g, '<hr>')
                 .replace(/\n\n/g, '</p><p>');
-
             return '<p>' + html + '</p>';
         }
 
-        // ===== ЭКРАНИРОВАНИЕ HTML =====
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -500,7 +794,6 @@
             return div.innerHTML;
         }
 
-        // ===== ПОИСК =====
         function searchGames() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const cards = document.querySelectorAll('#libraryGrid .game-card, #recentGrid .game-card');
@@ -511,7 +804,6 @@
             });
         }
 
-        // ===== КНОПКИ КАТЕГОРИЙ =====
         function showMain() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -526,23 +818,12 @@
             });
         });
 
-        // ===== ЗАГРУЗКА ПРИ СТАРТЕ =====
         document.addEventListener('DOMContentLoaded', function() {
-            loadLibrary();
+            // auth.onAuthStateChanged уже есть выше
         });
 
-        // ===== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ В ДРУГОЙ ВКЛАДКЕ =====
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'fanlogya_library') {
-                loadLibrary();
-            }
-        });
-
-        // ===== ЗАКРЫТИЕ ПО ESC =====
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeLoreViewer();
-            }
+            if (e.key === 'Escape') closeLoreViewer();
         });
     </script>
 

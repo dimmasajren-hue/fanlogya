@@ -311,30 +311,42 @@
     <!-- ============================================================
     ПОДКЛЮЧЕНИЕ FIREBASE
     ============================================================ -->
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ===== ВСТАВЬ СВОЙ КОНФИГ FIREBASE =====
+        // ===== КОНФИГ FIREBASE =====
         const firebaseConfig = {
-           apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
-           authDomain: "fanlogya.firebaseapp.com",
-           projectId: "fanlogya",
-           storageBucket: "fanlogya.firebasestorage.app",
-           messagingSenderId: "448128302344",
-           appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
         };
 
-        // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+
+        // ===== СЛЕДИМ ЗА ПОЛЬЗОВАТЕЛЕМ =====
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) {
+                const name = user.displayName || user.email || 'Пользователь';
+                document.querySelector('.user-icon').textContent = '👤 ' + name;
+            } else {
+                document.querySelector('.user-icon').textContent = '👤';
+            }
+        });
 
         // ============================================================
         // ЛОГИКА РЕДАКТОРА
         // ============================================================
 
-        // ===== ВЫБОР ЭМОДЗИ =====
         function toggleEmojiPicker() {
             const picker = document.getElementById('emojiPicker');
             picker.style.display = picker.style.display === 'none' ? 'grid' : 'none';
@@ -345,7 +357,6 @@
             document.getElementById('emojiPicker').style.display = 'none';
         }
 
-        // ===== ПРЕДПРОСМОТР =====
         function previewLore() {
             const title = document.getElementById('title').value || 'Без названия';
             const icon = document.getElementById('icon').value || '📖';
@@ -372,7 +383,6 @@
             document.getElementById('previewArea').classList.add('active');
         }
 
-        // ===== ПРОСТОЙ ПАРСЕР МАРКДАУНА =====
         function renderMarkdown(text) {
             text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
@@ -389,7 +399,6 @@
             return '<p>' + text + '</p>';
         }
 
-        // ===== ОЧИСТКА ФОРМЫ =====
         function clearForm() {
             document.getElementById('title').value = '';
             document.getElementById('universe').value = '';
@@ -401,8 +410,19 @@
             document.getElementById('statusMessage').textContent = '';
         }
 
-        // ===== ПУБЛИКАЦИЯ В FIREBASE =====
+        function showStatus(message, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = message;
+            el.className = 'status-message ' + type;
+        }
+
+        // ===== ПУБЛИКАЦИЯ =====
         async function publishLore() {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт, чтобы опубликовать хронологию!');
+                return;
+            }
+
             const title = document.getElementById('title').value.trim();
             if (!title) {
                 showStatus('❌ Пожалуйста, введи название хронологии!', 'error');
@@ -428,18 +448,18 @@
                     genre: document.getElementById('genre').value,
                     icon: document.getElementById('icon').value || '📖',
                     author: document.getElementById('author').value || 'Аноним',
+                    authorId: currentUser ? currentUser.uid : null,
                     date: new Date().toLocaleDateString('ru-RU'),
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    likes: 0,
                     content: content
                 };
 
-                // Сохраняем в Firestore
                 await db.collection('lores').add(loreData);
 
                 showStatus('🎉 Хронология успешно опубликована в облаке! Теперь её увидят все!', 'success');
                 clearForm();
 
-                // Обновляем библиотеку на главной
                 if (window.opener) {
                     try {
                         window.opener.loadLibrary();
@@ -455,14 +475,6 @@
             publishBtn.textContent = '💾 Опубликовать';
         }
 
-        // ===== ПОКАЗАТЬ СТАТУС =====
-        function showStatus(message, type) {
-            const el = document.getElementById('statusMessage');
-            el.textContent = message;
-            el.className = 'status-message ' + type;
-        }
-
-        // ===== КЛИК ВНЕ ЭМОДЗИ-ПИКЕРА =====
         document.addEventListener('click', function(e) {
             const picker = document.getElementById('emojiPicker');
             if (picker.style.display === 'grid') {
