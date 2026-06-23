@@ -6,35 +6,621 @@
     <title>Fanlogya — Библиотека хронологий</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ===== ВСЕ СТИЛИ ИЗ ПРЕДЫДУЩЕЙ ВЕРСИИ ===== */
-        /* ... (скопируй стили из старого index.html) ... */
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
 
-        /* ===== НОВЫЕ СТИЛИ ДЛЯ КОММЕНТАРИЕВ ===== */
+        /* ===== ШАПКА ===== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 16px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e94560;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { font-size: 2rem; }
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo span {
+            font-size: 0.65rem;
+            color: #667788;
+            display: block;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .header-right input {
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
+            border-radius: 30px;
+            padding: 8px 18px;
+            color: #e0e0e0;
+            width: 200px;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .header-right input:focus {
+            outline: none;
+            border-color: #e94560;
+            width: 250px;
+        }
+        .header-right input::placeholder { color: #445566; }
+
+        /* ===== ПОЛЬЗОВАТЕЛЬ ===== */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-info .name {
+            color: #e0e8f0;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .user-info .logout-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 3px 14px;
+            color: #8899aa;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .user-info .logout-btn:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .auth-btn {
+            background: #e94560;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 18px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .auth-btn:hover {
+            background: #ff5a7a;
+            transform: scale(1.05);
+        }
+        .moderator-badge {
+            background: #f5a623;
+            color: #0a0a0a;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        /* ===== КАТЕГОРИИ ===== */
+        .nav-categories {
+            background: #0d0d1a;
+            padding: 10px 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1a1a3a;
+            overflow-x: auto;
+        }
+        .nav-categories a {
+            color: #8899aa;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 4px;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .nav-categories a:hover { color: #e0e8f0; border-bottom-color: #e94560; }
+        .nav-categories a.active { color: #f5a623; border-bottom-color: #f5a623; }
+
+        /* ===== КОНТЕЙНЕР ===== */
+        .container { max-width: 1300px; margin: 0 auto; padding: 20px 20px 40px; }
+
+        /* ===== БАННЕР ===== */
+        .banner {
+            background: linear-gradient(135deg, #0f3460, #1a1a3e);
+            border-radius: 16px;
+            padding: 28px 36px;
+            margin-bottom: 30px;
+            border: 1px solid #1a2a4a;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner::after {
+            content: '🧬';
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: 0.06;
+        }
+        .banner h2 { font-size: 1.6rem; color: #f5a623; }
+        .banner p { color: #99aabb; max-width: 550px; margin: 4px 0 10px; font-size: 0.95rem; }
+        .banner .tag {
+            display: inline-block;
+            background: #e94560;
+            padding: 3px 16px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .banner .btn-create-banner {
+            background: #f5a623;
+            color: #0a0a0a;
+            padding: 3px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        .banner .btn-create-banner:hover { background: #ffc107; }
+
+        /* ===== СЕКЦИИ ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 28px 0 16px;
+        }
+        .section-header h2 { font-size: 1.3rem; color: #e0e8f0; font-weight: 700; }
+        .section-header a {
+            color: #e94560;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .section-header a:hover { text-decoration: underline; }
+        .btn-create {
+            background: #e94560;
+            padding: 6px 20px;
+            border-radius: 30px;
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .btn-create:hover {
+            background: #ff5a7a;
+            transform: scale(1.05);
+        }
+
+        /* ===== СЕТКА ===== */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* ===== КАРТОЧКА ===== */
+        .game-card {
+            background: #111122;
+            border-radius: 14px;
+            padding: 16px 14px;
+            text-align: center;
+            border: 1px solid #1a1a3a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #e94560;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+        }
+        .game-card .icon {
+            font-size: 3.2rem;
+            display: block;
+            margin-bottom: 4px;
+            transition: 0.3s;
+        }
+        .game-card:hover .icon { transform: scale(1.1) rotate(-5deg); }
+        .game-card .game-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #e0e8f0;
+            margin-bottom: 2px;
+        }
+        .game-card .game-sub {
+            font-size: 0.65rem;
+            color: #667788;
+            letter-spacing: 0.5px;
+        }
+        .game-card .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #667788;
+        }
+        .game-card .game-stats span { display: flex; align-items: center; gap: 3px; }
+        .game-card .author-badge {
+            font-size: 0.55rem;
+            color: #445566;
+            margin-top: 3px;
+        }
+        .game-card .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #e94560;
+            font-size: 0.5rem;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .game-card.add-card {
+            border-style: dashed;
+            border-color: #2a2a4a;
+            opacity: 0.4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px;
+        }
+        .game-card.add-card:hover { opacity: 0.7; border-color: #f5a623; }
+        .game-card.add-card .icon { font-size: 2.4rem; opacity: 0.5; }
+        .pin-badge {
+            background: #f5a623;
+            color: #0a0a0a;
+            font-size: 0.5rem;
+            padding: 1px 6px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* ===== КНОПКИ В КАРТОЧКЕ ===== */
+        .lore-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .lore-actions button {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 2px 10px;
+            color: #8899aa;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lore-actions button:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .lore-actions button.danger:hover {
+            border-color: #e94560;
+            background: #e94560;
+            color: #fff;
+        }
+        .lore-actions button.pin:hover {
+            border-color: #f5a623;
+            background: #f5a623;
+            color: #0a0a0a;
+        }
+
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        .admin-panel {
+            background: #1a1a3a;
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin: 0 0 20px 0;
+            border: 1px solid #f5a623;
+            display: none;
+        }
+        .admin-panel.visible { display: block; }
+        .admin-panel h3 {
+            color: #f5a623;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        .admin-panel .stat {
+            display: inline-block;
+            background: #0d0d1a;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 4px;
+            color: #8899aa;
+            font-size: 0.75rem;
+        }
+        .admin-panel .stat span { color: #e0e8f0; font-weight: 700; }
+        .admin-panel .admin-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .admin-panel .admin-actions button {
+            background: #1a1a3a;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 4px 14px;
+            color: #8899aa;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.7rem;
+        }
+        .admin-panel .admin-actions button:hover {
+            border-color: #f5a623;
+            color: #f5a623;
+        }
+
+        /* ===== ЗАГРУЗКА ===== */
+        .loading-spinner {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 30px;
+            color: #667788;
+        }
+        .loading-spinner span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        /* ===== ПУСТАЯ БИБЛИОТЕКА ===== */
+        .library-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #667788;
+        }
+        .library-empty span { font-size: 3.5rem; display: block; margin-bottom: 12px; }
+        .library-empty a { color: #e94560; font-weight: 600; text-decoration: none; }
+        .library-empty a:hover { text-decoration: underline; }
+
+        /* ===== КНОПКА НАВЕРХ ===== */
+        .back-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.3);
+            transition: 0.3s;
+            z-index: 999;
+        }
+        .back-top:hover {
+            transform: scale(1.1);
+            background: #ff5a7a;
+        }
+
+        /* ===== ПОДВАЛ ===== */
+        footer {
+            background: #0a0a18;
+            text-align: center;
+            padding: 18px 20px;
+            border-top: 1px solid #1a1a3a;
+            color: #445566;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        footer .heart { color: #e94560; }
+
+        /* ================================================================
+           СТИЛИ ДЛЯ ОКНА ПРОСМОТРА
+           ================================================================ */
+        .lore-viewer-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.88);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px 16px;
+        }
+        .lore-viewer-overlay.active {
+            display: block;
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .lore-viewer-box {
+            max-width: 860px;
+            margin: 0 auto;
+            background: #0d0d1a;
+            border-radius: 18px;
+            padding: 32px 36px;
+            border: 1px solid #1a1a3a;
+            position: relative;
+        }
+        .lore-viewer-box .close-btn {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #e94560;
+            border: none;
+            color: #fff;
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .lore-viewer-box .close-btn:hover {
+            transform: scale(1.1);
+            background: #ff5a7a;
+        }
+        .lore-viewer-box .header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .lore-viewer-box .header .icon { font-size: 3.5rem; }
+        .lore-viewer-box .header .info h2 {
+            color: #f5a623;
+            font-size: 1.8rem;
+        }
+        .lore-viewer-box .header .info p {
+            color: #8899aa;
+            font-size: 0.95rem;
+        }
+        .lore-viewer-box .header .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .lore-viewer-box .header .tags span {
+            background: #1a1a3a;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 1px solid #2a2a4a;
+            color: #99aabb;
+        }
+        .lore-viewer-box .content {
+            color: #c0d0e0;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+        .lore-viewer-box .content h2 { color: #f5a623; margin: 18px 0 8px; }
+        .lore-viewer-box .content h3 { color: #e94560; margin: 18px 0 8px; }
+        .lore-viewer-box .content h4 { color: #e0e8f0; margin: 14px 0 6px; }
+        .lore-viewer-box .content ul, .lore-viewer-box .content ol { margin: 8px 0 16px 22px; }
+        .lore-viewer-box .content li { margin-bottom: 4px; }
+        .lore-viewer-box .content hr { border-color: #1a1a3a; margin: 16px 0; }
+        .lore-viewer-box .content .highlight {
+            background: #1a1a3a;
+            border-left: 4px solid #e94560;
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-style: italic;
+            color: #ddeeff;
+        }
+
+        /* ===== НИЖНИЙ БЛОК (ЛАЙКИ) ===== */
+        .lore-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid #1a1a3a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .like-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 30px;
+            padding: 6px 18px;
+            color: #e0e8f0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .like-btn:hover {
+            border-color: #e94560;
+            background: #1a1a3a;
+        }
+        .like-btn.liked {
+            border-color: #e94560;
+            background: #e94560;
+            color: #fff;
+        }
+        .like-btn .heart { font-size: 1rem; }
+        .like-btn .count { font-weight: 700; min-width: 16px; }
+        .like-btn .heart.empty { color: #667788; }
+        .like-btn.liked .heart.empty { color: #fff; }
+        .lore-meta {
+            display: flex;
+            gap: 14px;
+            color: #667788;
+            font-size: 0.75rem;
+        }
+        .lore-meta span { display: flex; align-items: center; gap: 3px; }
+
+        /* ===== КОММЕНТАРИИ ===== */
         .comments-section {
-            margin-top: 20px;
-            padding-top: 16px;
+            margin-top: 18px;
+            padding-top: 14px;
             border-top: 1px solid #1a1a3a;
         }
         .comments-section h4 {
             color: #e0e8f0;
-            margin-bottom: 12px;
-            font-size: 1rem;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
         }
+        .comments-section h4 span { color: #f5a623; }
         .comment-input-area {
             display: flex;
-            gap: 10px;
-            margin-bottom: 14px;
+            gap: 8px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
         .comment-input-area input {
             flex: 1;
-            padding: 10px 16px;
+            padding: 8px 16px;
             background: #1a1a30;
             border: 1px solid #2a2a4a;
             border-radius: 24px;
             color: #e0e0e0;
-            font-size: 0.9rem;
-            min-width: 150px;
+            font-size: 0.85rem;
+            min-width: 120px;
         }
         .comment-input-area input:focus {
             outline: none;
@@ -44,9 +630,10 @@
             background: #e94560;
             border: none;
             border-radius: 24px;
-            padding: 10px 24px;
+            padding: 8px 20px;
             color: #fff;
             font-weight: 700;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -56,9 +643,9 @@
         }
         .comment-item {
             background: #111122;
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 8px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 6px;
             border: 1px solid #1a1a3a;
         }
         .comment-item .cmt-header {
@@ -66,36 +653,36 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 4px;
+            gap: 4px;
+            margin-bottom: 2px;
         }
         .comment-item .cmt-author {
             color: #f5a623;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .comment-item .cmt-date {
             color: #445566;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         .comment-item .cmt-text {
             color: #c0d0e0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             word-wrap: break-word;
         }
         .comment-item .cmt-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-top: 4px;
         }
         .comment-item .cmt-actions button {
             background: transparent;
             border: none;
             color: #667788;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             cursor: pointer;
             transition: 0.3s;
-            padding: 2px 8px;
+            padding: 1px 8px;
             border-radius: 12px;
         }
         .comment-item .cmt-actions button:hover {
@@ -107,16 +694,53 @@
         }
         .no-comments {
             color: #445566;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
-            padding: 16px;
+            padding: 12px;
         }
         .comments-loading {
             color: #667788;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
-            padding: 10px;
+            padding: 8px;
         }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 700px) {
+            header { flex-direction: column; align-items: stretch; gap: 10px; }
+            .header-right { flex-wrap: wrap; }
+            .header-right input { width: 100%; }
+            .header-right input:focus { width: 100%; }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
+            .banner { padding: 18px 20px; }
+            .banner h2 { font-size: 1.3rem; }
+            .banner::after { font-size: 5rem; }
+            .nav-categories { padding: 8px 16px; gap: 12px; }
+            .nav-categories a { font-size: 0.7rem; }
+            .lore-viewer-box { padding: 18px 16px; }
+            .lore-viewer-box .header { flex-direction: column; text-align: center; }
+            .admin-panel { padding: 14px; }
+            .admin-panel .stat { font-size: 0.65rem; padding: 2px 10px; }
+            .container { padding: 12px 12px 30px; }
+            .game-card .icon { font-size: 2.6rem; }
+            .game-card .game-title { font-size: 0.8rem; }
+            .like-btn { font-size: 0.75rem; padding: 4px 14px; }
+            .comment-input-area input { font-size: 0.8rem; padding: 6px 14px; }
+        }
+        @media (max-width: 450px) {
+            .games-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .game-card { padding: 12px 8px; }
+            .game-card .icon { font-size: 2.2rem; }
+            .game-card .game-title { font-size: 0.7rem; }
+            .lore-viewer-box .header .icon { font-size: 2.8rem; }
+            .lore-viewer-box .header .info h2 { font-size: 1.4rem; }
+        }
+
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e94560; }
     </style>
 </head>
 <body>
@@ -155,9 +779,8 @@
         <div id="adminPanel" class="admin-panel">
             <h3>🛡️ Панель модератора</h3>
             <div>
-                <span class="stat">📚 Всего хронологий: <span id="totalLores">0</span></span>
-                <span class="stat">👤 Всего пользователей: <span id="totalUsers">0</span></span>
-                <span class="stat">❤️ Всего лайков: <span id="totalLikes">0</span></span>
+                <span class="stat">📚 Всего: <span id="totalLores">0</span></span>
+                <span class="stat">❤️ Лайков: <span id="totalLikes">0</span></span>
                 <span class="stat">💬 Комментариев: <span id="totalComments">0</span></span>
             </div>
             <div class="admin-actions">
@@ -173,27 +796,27 @@
                 Здесь собраны фанатские хронологии игр, фильмов и вселенных.
                 Нажимай на иконку — читай лор. Или создай свою хронологию!
             </p>
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
                 <span class="tag">🔥 Библиотека пополняется</span>
-                <a href="editor.html" style="background:#f5a623; color:#0a0a0a; padding:4px 20px; border-radius:30px; text-decoration:none; font-weight:700; font-size:0.8rem; letter-spacing:1px;">➕ Создать свою</a>
+                <a href="editor.html" class="btn-create-banner">➕ Создать свою</a>
             </div>
         </div>
 
         <!-- ===== СЕКЦИЯ: БИБЛИОТЕКА ===== -->
         <div class="section-header">
             <h2>📚 Все хронологии</h2>
-            <a href="editor.html" class="btn-create">➕ Создать свою</a>
+            <a href="editor.html" class="btn-create">➕ Создать</a>
         </div>
 
         <div class="games-grid" id="libraryGrid">
             <div class="loading-spinner">
                 <span>⏳</span>
-                <p>Загрузка хронологий из облака...</p>
+                <p>Загрузка хронологий...</p>
             </div>
         </div>
 
         <!-- ===== СЕКЦИЯ: НЕДАВНО ДОБАВЛЕННЫЕ ===== -->
-        <div class="section-header" style="margin-top: 30px;">
+        <div class="section-header" style="margin-top: 20px;">
             <h2>🆕 Недавно добавленные</h2>
             <a href="#" onclick="loadLibrary(); return false;">🔄 Обновить</a>
         </div>
@@ -212,8 +835,8 @@
         <div class="lore-viewer-box">
             <button class="close-btn" onclick="closeLoreViewer()">✕</button>
             <div id="loreViewerContent">
-                <div style="text-align:center; padding:40px; color:#667788;">
-                    <span style="font-size:3rem;">⏳</span>
+                <div style="text-align:center; padding:30px; color:#667788;">
+                    <span style="font-size:2.5rem;">⏳</span>
                     <p>Загрузка...</p>
                 </div>
             </div>
@@ -225,8 +848,8 @@
 
     <!-- ===== ПОДВАЛ ===== -->
     <footer>
-        <p>Fanlogya — библиотека фанатских хронологий игр и вселенных</p>
-        <p style="font-size:0.8rem; margin-top:4px;">Сделано с <span class="heart">❤</span> Димой · 2026</p>
+        <p>Fanlogya — библиотека фанатских хронологий</p>
+        <p style="font-size:0.7rem; margin-top:2px;">Сделано с <span class="heart">❤</span> Димой · 2026</p>
     </footer>
 
     <!-- ============================================================
@@ -238,7 +861,7 @@
 
     <script>
         // ============================================================
-        // КОНФИГ FIREBASE (ВСТАВЬ СВОЙ!)
+        // КОНФИГ FIREBASE
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
@@ -254,7 +877,6 @@
         const auth = firebase.auth();
 
         let currentUser = null;
-        let currentLores = [];
         let currentLoreId = null;
 
         // ============================================================
@@ -279,7 +901,7 @@
             if (user) {
                 const name = user.displayName || user.email || 'Пользователь';
                 const isMod = isModerator(user);
-                const badge = isMod ? ' 🛡️ Модератор' : '';
+                const badge = isMod ? ' <span class="moderator-badge">🛡️ Модератор</span>' : '';
                 section.innerHTML = `
                     <div class="user-info">
                         <span class="name">👤 ${name}${badge}</span>
@@ -323,10 +945,8 @@
                 let likes = 0;
                 lores.forEach(l => likes += (l.likes || 0));
                 document.getElementById('totalLikes').textContent = likes;
-                
                 const commentsSnap = await db.collection('comments').get();
                 document.getElementById('totalComments').textContent = commentsSnap.size;
-                document.getElementById('totalUsers').textContent = '👀 в консоли';
             } catch (e) { console.error(e); }
         }
 
@@ -341,7 +961,7 @@
             const grid = document.getElementById('libraryGrid');
             const recentGrid = document.getElementById('recentGrid');
 
-            grid.innerHTML = `<div class="loading-spinner"><span>⏳</span><p>Загрузка хронологий из облака...</p></div>`;
+            grid.innerHTML = `<div class="loading-spinner"><span>⏳</span><p>Загрузка хронологий...</p></div>`;
             recentGrid.innerHTML = `<div class="loading-spinner"><span>⏳</span><p>Загрузка...</p></div>`;
 
             try {
@@ -357,11 +977,11 @@
                         id: doc.id,
                         ...data,
                         likes: data.likes || 0,
+                        commentsCount: data.commentsCount || 0,
                         authorId: data.authorId || null,
                         pinned: data.pinned || false
                     });
                 });
-                currentLores = lores;
 
                 const sorted = [...lores].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
@@ -369,7 +989,7 @@
                     grid.innerHTML = `
                         <div class="library-empty">
                             <span>📭</span>
-                            <p style="margin-bottom:12px;">Пока нет хронологий. Будь первым!</p>
+                            <p style="margin-bottom:8px;">Пока нет хронологий. Будь первым!</p>
                             <a href="editor.html">Создать хронологию →</a>
                         </div>
                     `;
@@ -386,23 +1006,24 @@
                 sorted.forEach(lore => {
                     const isOwner = currentUser && lore.authorId === currentUser.uid;
                     const isMod = isModerator(currentUser);
-                    const showModActions = isMod || isOwner;
+                    const showActions = isMod || isOwner;
 
                     gridHTML += `
                         <div class="game-card" onclick="openLoreById('${lore.id}')">
+                            ${lore.pinned ? '<span class="badge">📌</span>' : ''}
                             <span class="icon">${lore.icon || '📖'}</span>
                             <div class="game-title">
                                 ${escapeHtml(lore.title || 'Без названия')}
                                 ${lore.pinned ? '<span class="pin-badge">📌</span>' : ''}
                             </div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
-                            <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
+                            <div class="game-stats">
                                 <span>❤️ ${lore.likes || 0}</span>
                                 <span>💬 ${lore.commentsCount || 0}</span>
                                 <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
                             </div>
                             <div class="author-badge">📅 ${lore.date || ''}</div>
-                            ${showModActions ? `
+                            ${showActions ? `
                                 <div class="lore-actions" onclick="event.stopPropagation();">
                                     ${isMod || isOwner ? `<button onclick="deleteLore('${lore.id}')" class="danger">🗑️ Удалить</button>` : ''}
                                     ${isMod ? `<button onclick="pinLore('${lore.id}')" class="pin">📌 ${lore.pinned ? 'Открепить' : 'Закрепить'}</button>` : ''}
@@ -426,7 +1047,7 @@
                                 ${lore.pinned ? '<span class="pin-badge">📌</span>' : ''}
                             </div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
-                            <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
+                            <div class="game-stats">
                                 <span>❤️ ${lore.likes || 0}</span>
                                 <span>💬 ${lore.commentsCount || 0}</span>
                                 <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
@@ -441,7 +1062,7 @@
                 });
                 while (recent.length < 4) {
                     recentHTML += `
-                        <div class="game-card add-card" style="opacity:0.3;">
+                        <div class="game-card add-card">
                             <span class="icon">⏳</span>
                             <div class="game-title" style="color:#445566;">Скоро</div>
                             <div class="game-sub" style="color:#334455;">Новая хронология</div>
@@ -452,7 +1073,7 @@
                 recentGrid.innerHTML = recentHTML;
 
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
+                console.error(error);
                 grid.innerHTML = `
                     <div class="library-empty">
                         <span>❌</span>
@@ -480,7 +1101,6 @@
                 const confirmMsg = isMod ? '🛡️ Удалить как модератор?' : '🗑️ Удалить свою хронологию?';
                 if (!confirm(confirmMsg)) return;
                 await db.collection('lores').doc(loreId).delete();
-                // Удаляем комментарии к этой хронологии
                 const commentsSnap = await db.collection('comments').where('loreId', '==', loreId).get();
                 commentsSnap.forEach(d => d.ref.delete());
                 alert('✅ Хронология и комментарии удалены!');
@@ -507,7 +1127,7 @@
         }
 
         // ============================================================
-        // ОТКРЫТИЕ ХРОНОЛОГИИ (С КОММЕНТАРИЯМИ)
+        // ОТКРЫТИЕ ХРОНОЛОГИИ
         // ============================================================
         async function openLoreById(id) {
             currentLoreId = id;
@@ -516,8 +1136,8 @@
 
             overlay.classList.add('active');
             content.innerHTML = `
-                <div style="text-align:center; padding:40px; color:#667788;">
-                    <span style="font-size:3rem;">⏳</span>
+                <div style="text-align:center; padding:30px; color:#667788;">
+                    <span style="font-size:2.5rem;">⏳</span>
                     <p>Загрузка хронологии...</p>
                 </div>
             `;
@@ -526,10 +1146,10 @@
                 const doc = await db.collection('lores').doc(id).get();
                 if (!doc.exists) {
                     content.innerHTML = `
-                        <div style="text-align:center; padding:40px; color:#667788;">
-                            <span style="font-size:3rem;">❌</span>
+                        <div style="text-align:center; padding:30px; color:#667788;">
+                            <span style="font-size:2.5rem;">❌</span>
                             <p>Хронология не найдена!</p>
-                            <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:10px 30px; border-radius:30px; cursor:pointer; margin-top:12px;">Закрыть</button>
+                            <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer; margin-top:10px;">Закрыть</button>
                         </div>
                     `;
                     return;
@@ -556,22 +1176,22 @@
                             </div>
                         </div>
                     </div>
-                    <hr style="border-color:#1a1a3a; margin-bottom:20px;">
+                    <hr style="border-color:#1a1a3a; margin-bottom:16px;">
                     <div class="content">${renderMarkdown(lore.content || 'Текст хронологии пуст.')}</div>
 
                     <div class="lore-footer">
-                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                             <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${loreId}')" id="likeBtn_${loreId}">
                                 <span class="heart ${liked ? '' : 'empty'}">❤️</span>
                                 <span class="count" id="likeCount_${loreId}">${likes}</span>
                                 <span>${liked ? 'Лайкнут' : 'Лайкнуть'}</span>
                             </button>
                             ${isMod ? `
-                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:6px 16px; color:#e94560; cursor:pointer;">🗑️ Удалить</button>
-                                <button onclick="pinLore('${loreId}')" style="background:transparent; border:1px solid #f5a623; border-radius:20px; padding:6px 16px; color:#f5a623; cursor:pointer;">${lore.pinned ? '📌 Открепить' : '📌 Закрепить'}</button>
+                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:4px 14px; color:#e94560; cursor:pointer; font-size:0.75rem;">🗑️ Удалить</button>
+                                <button onclick="pinLore('${loreId}')" style="background:transparent; border:1px solid #f5a623; border-radius:20px; padding:4px 14px; color:#f5a623; cursor:pointer; font-size:0.75rem;">${lore.pinned ? '📌 Открепить' : '📌 Закрепить'}</button>
                             ` : ''}
                             ${isOwner && !isMod ? `
-                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:6px 16px; color:#e94560; cursor:pointer;">🗑️ Удалить</button>
+                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:4px 14px; color:#e94560; cursor:pointer; font-size:0.75rem;">🗑️ Удалить</button>
                             ` : ''}
                         </div>
                         <div class="lore-meta">
@@ -580,11 +1200,10 @@
                         </div>
                     </div>
 
-                    <!-- ===== КОММЕНТАРИИ ===== -->
-                    <div class="comments-section" id="commentsSection">
+                    <div class="comments-section">
                         <h4>💬 Комментарии (<span id="commentsCount">0</span>)</h4>
                         <div id="commentsList">
-                            <div class="comments-loading">⏳ Загрузка комментариев...</div>
+                            <div class="comments-loading">⏳ Загрузка...</div>
                         </div>
                         ${currentUser ? `
                             <div class="comment-input-area">
@@ -592,7 +1211,7 @@
                                 <button onclick="addComment('${loreId}')">➤ Отправить</button>
                             </div>
                         ` : `
-                            <div style="text-align:center; color:#445566; font-size:0.85rem; padding:8px;">
+                            <div style="text-align:center; color:#445566; font-size:0.8rem; padding:6px;">
                                 🔐 <a href="login.html" style="color:#e94560;">Войди</a>, чтобы оставить комментарий
                             </div>
                         `}
@@ -604,10 +1223,10 @@
 
             } catch (error) {
                 content.innerHTML = `
-                    <div style="text-align:center; padding:40px; color:#667788;">
-                        <span style="font-size:3rem;">❌</span>
-                        <p>Ошибка загрузки: ${error.message}</p>
-                        <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:10px 30px; border-radius:30px; cursor:pointer; margin-top:12px;">Закрыть</button>
+                    <div style="text-align:center; padding:30px; color:#667788;">
+                        <span style="font-size:2.5rem;">❌</span>
+                        <p>Ошибка: ${error.message}</p>
+                        <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer; margin-top:10px;">Закрыть</button>
                     </div>
                 `;
             }
@@ -660,16 +1279,12 @@
                 });
                 list.innerHTML = html;
 
-                // Обновляем счётчик комментариев в карточке
-                const loreDoc = await db.collection('lores').doc(loreId).get();
-                if (loreDoc.exists) {
-                    await db.collection('lores').doc(loreId).update({
-                        commentsCount: comments.length
-                    });
-                }
+                await db.collection('lores').doc(loreId).update({
+                    commentsCount: comments.length
+                });
 
             } catch (error) {
-                list.innerHTML = `<div class="no-comments">❌ Ошибка загрузки комментариев</div>`;
+                list.innerHTML = `<div class="no-comments">❌ Ошибка загрузки</div>`;
                 console.error(error);
             }
         }
@@ -682,7 +1297,7 @@
             const input = document.getElementById('commentInput');
             const text = input?.value?.trim();
             if (!text) { alert('✏️ Напиши комментарий!'); return; }
-            if (text.length > 500) { alert('❌ Слишком длинный комментарий (макс. 500 символов)'); return; }
+            if (text.length > 500) { alert('❌ Слишком длинный (макс. 500 символов)'); return; }
 
             try {
                 const commentData = {
@@ -707,14 +1322,15 @@
             if (!confirm('🗑️ Удалить комментарий?')) return;
             try {
                 const doc = await db.collection('comments').doc(commentId).get();
-                if (!doc.exists) { alert('❌ Комментарий не найден'); return; }
+                if (!doc.exists) { alert('❌ Не найден'); return; }
                 const isMod = isModerator(currentUser);
                 if (!isMod && doc.data().authorId !== currentUser.uid) {
                     alert('❌ Ты не автор!');
                     return;
                 }
+                const loreId = doc.data().loreId;
                 await db.collection('comments').doc(commentId).delete();
-                loadComments(doc.data().loreId);
+                loadComments(loreId);
                 refreshStats();
             } catch (error) {
                 alert('❌ Ошибка: ' + error.message);
@@ -822,7 +1438,6 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeLoreViewer();
-            // Ctrl+Enter для отправки комментария
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 if (currentLoreId) {
                     const input = document.getElementById('commentInput');
