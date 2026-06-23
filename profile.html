@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanlogya — Мой профиль</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== СТИЛИ ПРОФИЛЯ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e94560;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        header .logo h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        header .logo span { font-size: 0.65rem; color: #667788; }
+        header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        header .header-right a {
+            color: #e94560;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        header .header-right a:hover { text-decoration: underline; }
+
+        /* ===== КОНТЕЙНЕР ПРОФИЛЯ ===== */
+        .profile-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* ===== КАРТОЧКА ПРОФИЛЯ ===== */
+        .profile-card {
+            background: #0d0d1a;
+            border-radius: 20px;
+            border: 1px solid #1a1a3a;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #1a1a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            border: 3px solid #e94560;
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-avatar .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            padding: 4px;
+            font-size: 0.6rem;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .profile-avatar:hover .avatar-edit {
+            opacity: 1;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+        .profile-info .name {
+            color: #f5a623;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .profile-info .email {
+            color: #667788;
+            font-size: 0.9rem;
+        }
+        .profile-info .edit-name-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 4px 16px;
+            color: #8899aa;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 6px;
+        }
+        .profile-info .edit-name-btn:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .profile-info .role-badge {
+            display: inline-block;
+            background: #f5a623;
+            color: #0a0a0a;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #1a1a3a;
+        }
+        .profile-stats .stat {
+            background: #1a1a3a;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid #2a2a4a;
+            font-size: 0.9rem;
+        }
+        .profile-stats .stat span {
+            color: #f5a623;
+            font-weight: 700;
+        }
+
+        /* ===== ХРОНОЛОГИИ В ПРОФИЛЕ ===== */
+        .profile-section {
+            background: #0d0d1a;
+            border-radius: 20px;
+            border: 1px solid #1a1a3a;
+            padding: 24px 30px;
+        }
+        .profile-section .section-title {
+            color: #f5a623;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .lore-list {
+            display: grid;
+            gap: 12px;
+        }
+        .lore-item {
+            background: #111122;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #1a1a3a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .lore-item:hover {
+            border-color: #e94560;
+            transform: translateX(4px);
+        }
+        .lore-item .title {
+            color: #e0e8f0;
+            font-weight: 600;
+        }
+        .lore-item .title .icon { margin-right: 6px; }
+        .lore-item .meta {
+            color: #667788;
+            font-size: 0.8rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .lore-item .meta span { display: flex; align-items: center; gap: 4px; }
+        .no-lores {
+            color: #445566;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.95rem;
+        }
+        .no-lores a {
+            color: #e94560;
+            text-decoration: none;
+        }
+        .no-lores a:hover { text-decoration: underline; }
+
+        /* ===== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #0d0d1a;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid #1a1a3a;
+        }
+        .modal-box h2 {
+            color: #f5a623;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+        .modal-box label {
+            display: block;
+            color: #e0e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+        .modal-box input[type="text"],
+        .modal-box input[type="file"] {
+            width: 100%;
+            padding: 10px 14px;
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+        .modal-box input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal-box .modal-actions .btn-save {
+            background: #e94560;
+            color: #fff;
+        }
+        .modal-box .modal-actions .btn-save:hover { background: #ff5a7a; }
+        .modal-box .modal-actions .btn-cancel {
+            background: #1a1a3a;
+            color: #8899aa;
+        }
+        .modal-box .modal-actions .btn-cancel:hover { background: #2a2a4a; }
+        .modal-box .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1a1a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 8px auto 0;
+            overflow: hidden;
+            border: 2px solid #2a2a4a;
+        }
+        .modal-box .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 700px) {
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-avatar { width: 80px; height: 80px; font-size: 2.8rem; }
+            .profile-info .name { font-size: 1.6rem; }
+            .profile-stats { justify-content: center; }
+            .profile-card { padding: 20px; }
+            .profile-section { padding: 16px 18px; }
+            .lore-item { flex-direction: column; text-align: center; }
+        }
+
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e94560; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ШАПКА ===== -->
+    <header>
+        <div class="logo">
+            <h1>👤 Fanlogya</h1>
+            <span>Мой профиль</span>
+        </div>
+        <div class="header-right">
+            <a href="index.html">📚 На главную</a>
+            <a href="editor.html">✏️ Создать</a>
+            <a href="change-password.html">🔑 Сменить пароль</a>
+        </div>
+    </header>
+
+    <!-- ===== ОСНОВНОЙ КОНТЕЙНЕР ===== -->
+    <div class="profile-container">
+
+        <!-- ===== ПРОФИЛЬ ===== -->
+        <div class="profile-card" id="profileCard">
+            <div class="profile-header">
+                <div class="profile-avatar" id="avatarDisplay" onclick="openAvatarModal()">
+                    <span id="avatarEmoji">🧑</span>
+                    <div class="avatar-edit">✏️ Изменить</div>
+                </div>
+                <div class="profile-info">
+                    <div class="name" id="profileName">Загрузка...</div>
+                    <div class="email" id="profileEmail">email@example.com</div>
+                    <div id="roleBadge"></div>
+                    <button class="edit-name-btn" onclick="openNameModal()">✏️ Изменить имя</button>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat">📚 Хронологий: <span id="loreCount">0</span></div>
+                <div class="stat">❤️ Получено лайков: <span id="likeCount">0</span></div>
+                <div class="stat">💬 Комментариев: <span id="commentCount">0</span></div>
+            </div>
+        </div>
+
+        <!-- ===== МОИ ХРОНОЛОГИИ ===== -->
+        <div class="profile-section">
+            <div class="section-title">📄 Мои хронологии</div>
+            <div class="lore-list" id="myLores">
+                <div class="no-lores">⏳ Загрузка...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО: ИЗМЕНЕНИЕ ИМЕНИ ===== -->
+    <div class="modal-overlay" id="nameModal">
+        <div class="modal-box">
+            <h2>✏️ Изменить имя</h2>
+            <label>Новое имя</label>
+            <input type="text" id="newNameInput" placeholder="Введи новое имя">
+            <div class="modal-actions">
+                <button class="btn-save" onclick="saveName()">💾 Сохранить</button>
+                <button class="btn-cancel" onclick="closeNameModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО: ИЗМЕНЕНИЕ АВАТАРКИ ===== -->
+    <div class="modal-overlay" id="avatarModal">
+        <div class="modal-box">
+            <h2>🖼️ Изменить аватарку</h2>
+            <div class="avatar-preview" id="avatarPreview">
+                <span id="avatarPreviewEmoji">🧑</span>
+            </div>
+            <label>Выбери эмодзи</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                <button onclick="pickAvatar('🧑')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🧑</button>
+                <button onclick="pickAvatar('👤')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">👤</button>
+                <button onclick="pickAvatar('🐱')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🐱</button>
+                <button onclick="pickAvatar('🐶')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🐶</button>
+                <button onclick="pickAvatar('🦊')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🦊</button>
+                <button onclick="pickAvatar('🐼')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🐼</button>
+                <button onclick="pickAvatar('🐉')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🐉</button>
+                <button onclick="pickAvatar('🦄')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🦄</button>
+                <button onclick="pickAvatar('🧙')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🧙</button>
+                <button onclick="pickAvatar('🧝')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🧝</button>
+                <button onclick="pickAvatar('🤖')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🤖</button>
+                <button onclick="pickAvatar('👾')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">👾</button>
+                <button onclick="pickAvatar('🎃')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">🎃</button>
+                <button onclick="pickAvatar('💀')" style="font-size:1.8rem;background:transparent;border:1px solid #2a2a4a;border-radius:10px;padding:4px 10px;cursor:pointer;">💀</button>
+            </div>
+            <label style="margin-top:12px;">Или загрузи картинку</label>
+            <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(event)">
+            <div class="modal-actions">
+                <button class="btn-save" onclick="saveAvatar()">💾 Сохранить</button>
+                <button class="btn-cancel" onclick="closeAvatarModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    FIREBASE
+    ============================================================ -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // ============================================================
+        // КОНФИГ FIREBASE
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        let currentUser = null;
+        let currentAvatar = '🧑';
+
+        // ============================================================
+        // МОДЕРАТОРЫ
+        // ============================================================
+        const MODERATORS = [
+            "CT2bmCrOKvV8NUT7OC1HYt3fhoR2"
+        ];
+
+        function isModerator(user) {
+            if (!user) return false;
+            return MODERATORS.includes(user.uid);
+        }
+
+        // ============================================================
+        // DOM
+        // ============================================================
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const roleBadge = document.getElementById('roleBadge');
+        const loreCount = document.getElementById('loreCount');
+        const likeCount = document.getElementById('likeCount');
+        const commentCount = document.getElementById('commentCount');
+        const myLores = document.getElementById('myLores');
+        const avatarDisplay = document.getElementById('avatarDisplay');
+        const avatarEmoji = document.getElementById('avatarEmoji');
+
+        // ============================================================
+        // ЗАГРУЗКА ПРОФИЛЯ
+        // ============================================================
+        async function loadProfile(user) {
+            if (!user) {
+                profileName.textContent = '❌ Войди в аккаунт';
+                profileEmail.textContent = '';
+                roleBadge.innerHTML = '';
+                myLores.innerHTML = `
+                    <div class="no-lores">
+                        <a href="login.html">Войди</a>, чтобы увидеть свои хронологии
+                    </div>
+                `;
+                return;
+            }
+
+            // Имя и email
+            const displayName = user.displayName || user.email || 'Пользователь';
+            profileName.textContent = displayName;
+            profileEmail.textContent = user.email || '';
+
+            // Роль
+            if (isModerator(user)) {
+                roleBadge.innerHTML = '<span class="role-badge">🛡️ Модератор</span>';
+            } else {
+                roleBadge.innerHTML = '';
+            }
+
+            // Аватарка (из Firestore)
+            try {
+                const doc = await db.collection('users').doc(user.uid).get();
+                if (doc.exists && doc.data().avatar) {
+                    currentAvatar = doc.data().avatar;
+                    avatarEmoji.textContent = currentAvatar;
+                } else {
+                    currentAvatar = '🧑';
+                    avatarEmoji.textContent = '🧑';
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки аватарки:', e);
+            }
+
+            // Загружаем хронологии
+            await loadLores(user);
+
+            // Комментарии
+            const commentsSnap = await db.collection('comments')
+                .where('authorId', '==', user.uid)
+                .get();
+            commentCount.textContent = commentsSnap.size;
+        }
+
+        // ============================================================
+        // ЗАГРУЗКА ХРОНОЛОГИЙ ПОЛЬЗОВАТЕЛЯ
+        // ============================================================
+        async function loadLores(user) {
+            try {
+                const snapshot = await db.collection('lores')
+                    .where('authorId', '==', user.uid)
+                    .orderBy('timestamp', 'desc')
+                    .get();
+
+                const lores = [];
+                snapshot.forEach(doc => {
+                    lores.push({ id: doc.id, ...doc.data() });
+                });
+
+                loreCount.textContent = lores.length;
+
+                let totalLikes = 0;
+                lores.forEach(l => totalLikes += (l.likes || 0));
+                likeCount.textContent = totalLikes;
+
+                if (lores.length === 0) {
+                    myLores.innerHTML = `
+                        <div class="no-lores">
+                            📭 У тебя пока нет хронологий.<br>
+                            <a href="editor.html">Создать свою →</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                myLores.innerHTML = lores.map(l => `
+                    <div class="lore-item" onclick="window.location.href='index.html#lore-${l.id}'">
+                        <div class="title">
+                            <span class="icon">${l.icon || '📖'}</span>
+                            ${l.title || 'Без названия'}
+                            ${l.pinned ? '📌' : ''}
+                        </div>
+                        <div class="meta">
+                            <span>❤️ ${l.likes || 0}</span>
+                            <span>💬 ${l.commentsCount || 0}</span>
+                            <span>📅 ${l.date || ''}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Ошибка загрузки хронологий:', error);
+                myLores.innerHTML = `
+                    <div class="no-lores" style="color:#e94560;">
+                        ❌ Ошибка загрузки: ${error.message}
+                        <br>
+                        <button onclick="location.reload()" style="background:#e94560;border:none;color:#fff;padding:6px 20px;border-radius:30px;cursor:pointer;margin-top:8px;">🔄 Обновить</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================================
+        // ИЗМЕНЕНИЕ ИМЕНИ
+        // ============================================================
+        let nameModalOpen = false;
+
+        function openNameModal() {
+            if (!currentUser) { alert('❌ Войди в аккаунт!'); return; }
+            document.getElementById('newNameInput').value = currentUser.displayName || '';
+            document.getElementById('nameModal').classList.add('active');
+            nameModalOpen = true;
+        }
+
+        function closeNameModal() {
+            document.getElementById('nameModal').classList.remove('active');
+            nameModalOpen = false;
+        }
+
+        async function saveName() {
+            const newName = document.getElementById('newNameInput').value.trim();
+            if (!newName) { alert('❌ Введи имя!'); return; }
+
+            try {
+                await currentUser.updateProfile({ displayName: newName });
+                // Обновляем в Firestore для сохранения
+                await db.collection('users').doc(currentUser.uid).set({
+                    displayName: newName
+                }, { merge: true });
+
+                profileName.textContent = newName;
+                closeNameModal();
+                alert('✅ Имя изменено!');
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // ИЗМЕНЕНИЕ АВАТАРКИ
+        // ============================================================
+        let avatarModalOpen = false;
+        let selectedAvatar = '🧑';
+        let avatarFileData = null;
+
+        function openAvatarModal() {
+            if (!currentUser) { alert('❌ Войди в аккаунт!'); return; }
+            selectedAvatar = currentAvatar;
+            document.getElementById('avatarPreviewEmoji').textContent = selectedAvatar;
+            document.getElementById('avatarModal').classList.add('active');
+            avatarModalOpen = true;
+            avatarFileData = null;
+            document.getElementById('avatarFileInput').value = '';
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('active');
+            avatarModalOpen = false;
+        }
+
+        function pickAvatar(emoji) {
+            selectedAvatar = emoji;
+            document.getElementById('avatarPreviewEmoji').textContent = emoji;
+            avatarFileData = null;
+            document.getElementById('avatarFileInput').value = '';
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                avatarFileData = e.target.result;
+                document.getElementById('avatarPreview').innerHTML =
+                    `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function saveAvatar() {
+            if (!currentUser) return;
+
+            try {
+                let avatarUrl = selectedAvatar;
+
+                if (avatarFileData) {
+                    // Загружаем картинку в Firebase Storage
+                    const storageRef = storage.ref(`avatars/${currentUser.uid}.jpg`);
+                    const response = await fetch(avatarFileData);
+                    const blob = await response.blob();
+                    await storageRef.put(blob);
+                    avatarUrl = await storageRef.getDownloadURL();
+                }
+
+                await db.collection('users').doc(currentUser.uid).set({
+                    avatar: avatarUrl
+                }, { merge: true });
+
+                currentAvatar = avatarUrl;
+                avatarEmoji.textContent = avatarUrl;
+                if (avatarUrl.startsWith('http')) {
+                    avatarDisplay.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"><div class="avatar-edit">✏️ Изменить</div>`;
+                } else {
+                    avatarDisplay.innerHTML = `<span id="avatarEmoji">${avatarUrl}</span><div class="avatar-edit">✏️ Изменить</div>`;
+                }
+
+                closeAvatarModal();
+                alert('✅ Аватарка обновлена!');
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // АВТОРИЗАЦИЯ
+        // ============================================================
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            loadProfile(user);
+        });
+
+        // ============================================================
+        // ЗАКРЫТИЕ МОДАЛОК ПО ESC
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (nameModalOpen) closeNameModal();
+                if (avatarModalOpen) closeAvatarModal();
+            }
+        });
+
+        // ============================================================
+        // ЗАКРЫТИЕ МОДАЛКИ ПО КЛИКУ ВНЕ ЕЁ
+        // ============================================================
+        document.getElementById('nameModal').addEventListener('click', function(e) {
+            if (e.target === this) closeNameModal();
+        });
+        document.getElementById('avatarModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAvatarModal();
+        });
+
+        console.log('👤 Профиль загружен!');
+    </script>
+
+</body>
+</html>
