@@ -3,8 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fanlogya — Магазин хронологий</title>
+    <title>Fanlogya — Библиотека хронологий</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили для библиотеки */
+        .library-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #667788;
+        }
+        .library-empty span {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+        .library-empty a {
+            color: #e94560;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .library-empty a:hover {
+            text-decoration: underline;
+        }
+        .btn-create {
+            background: #e94560;
+            padding: 8px 24px;
+            border-radius: 30px;
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-create:hover {
+            background: #ff5a7a;
+            transform: scale(1.05);
+        }
+        .author-badge {
+            font-size: 0.6rem;
+            color: #445566;
+            margin-top: 4px;
+        }
+        .game-card .icon {
+            font-size: 3.8rem;
+            display: block;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+        .game-card:hover .icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        /* Кнопка "Наверх" */
+        .back-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.4);
+            transition: 0.3s;
+            z-index: 999;
+        }
+        .back-top:hover {
+            transform: scale(1.1);
+            background: #ff5a7a;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,7 +84,7 @@
             <span class="logo-icon">📱</span>
             <div>
                 <h1>Fanlogya</h1>
-                <span>Хроники фанатских вселенных</span>
+                <span>Библиотека фанатских хронологий</span>
             </div>
         </div>
         <div class="header-right">
@@ -33,110 +103,191 @@
         <a href="#" onclick="showMain()">⭐ Топ хронологий</a>
     </div>
 
-    <!-- ===== КОНТЕЙНЕР ===== -->
+    <!-- ===== ОСНОВНОЙ КОНТЕЙНЕР ===== -->
     <div class="container">
 
-        <!-- ГЛАВНАЯ СТРАНИЦА -->
-        <div id="mainPage">
-
-            <div class="banner">
-                <h2>⚡ Магазин хронологий</h2>
-                <p>Нажимай на иконку игры — и читай полную хронологию! Придумано Димой (11 лет).</p>
-                <span class="tag">🔥 2 хронологии доступны</span>
+        <!-- ===== БАННЕР ===== -->
+        <div class="banner">
+            <h2>⚡ Библиотека хронологий</h2>
+            <p>
+                Здесь собраны фанатские хронологии игр, фильмов и вселенных.
+                Нажимай на иконку — читай лор. Или создай свою хронологию!
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+                <span class="tag">🔥 Библиотека пополняется</span>
+                <a href="editor.html" style="background:#f5a623; color:#0a0a0a; padding:4px 20px; border-radius:30px; text-decoration:none; font-weight:700; font-size:0.8rem; letter-spacing:1px;">➕ Создать свою</a>
             </div>
-
-            <div class="section-header">
-                <h2>⭐ Популярные хронологии</h2>
-                <a href="#">Смотреть все</a>
-            </div>
-
-            <div class="games-grid">
-
-                <!-- Часть 1 -->
-                <div class="game-card" onclick="openLore('lore1.html')">
-                    <span class="badge">Новое</span>
-                    <span class="icon">🧬</span>
-                    <div class="game-title">Half-Life: Backrooms</div>
-                    <div class="game-sub">Часть 1</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-
-                <!-- Часть 2 -->
-                <div class="game-card" onclick="openLore('lore2.html')">
-                    <span class="badge">Новое</span>
-                    <span class="icon">🧬</span>
-                    <div class="game-title">Half-Life: Backrooms 2</div>
-                    <div class="game-sub">Часть 2</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-
-               <!--Portal the void -->
-                <div class="game-card" onclick="openLore('lore3.html')">
-                    <span class="badge">Новое</span>
-                    <span class="icon">🌀</span>
-                    <div class="game-title">Portal : The Void</div>
-                    <div class="game-sub">Часть 1</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-
-
-                <!-- Пустые заготовки -->
-                <div class="game-card add-card">
-                    <span class="icon">➕</span>
-                    <div class="game-title" style="color:#667788;">Добавить</div>
-                    <div class="game-sub" style="color:#445566;">Новая хронология</div>
-                </div>
-
-            </div>
-
-            <div class="section-header" style="margin-top:10px;">
-                <h2>🆕 Недавно добавленные</h2>
-                <a href="#">Все новинки</a>
-            </div>
-
-            <div class="games-grid">
-                <div class="game-card" onclick="openLore('lore1.html')">
-                    <span class="icon">🧬</span>
-                    <div class="game-title">Half-Life: Backrooms</div>
-                    <div class="game-sub">Часть 1</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-                <div class="game-card" onclick="openLore('lore2.html')">
-                    <span class="icon">🧬</span>
-                    <div class="game-title">Half-Life: Backrooms 2</div>
-                    <div class="game-sub">Часть 2</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-                <div class="game-card" onclick="openLore('lore3.html')">
-                    <span class="icon">🌀</span>
-                    <div class="game-title">Portal : The Void</div>
-                    <div class="game-sub">Часть 1</div>
-                    <div class="game-rating">★★★★★</div>
-                </div>
-                <div class="game-card add-card" style="opacity:0.3;">
-                    <span class="icon">⏳</span>
-                    <div class="game-title" style="color:#445566;">Скоро</div>
-                    <div class="game-sub" style="color:#334455;">Ожидай...</div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- СТРАНИЦА ХРОНОЛОГИИ (загружается через iframe) -->
-        <div id="lorePage" class="lore-page">
-            <a href="#" class="lore-back" onclick="closeLore()">← Назад к хронологиям</a>
-            <iframe id="loreFrame" src="" frameborder="0"></iframe>
+        <!-- ===== СЕКЦИЯ: БИБЛИОТЕКА ===== -->
+        <div class="section-header">
+            <h2>📚 Все хронологии</h2>
+            <a href="editor.html" class="btn-create">➕ Создать свою</a>
+        </div>
+
+        <div class="games-grid" id="libraryGrid">
+            <!-- Сюда будут загружаться хронологии из localStorage -->
+            <div class="library-empty">
+                <span>📭</span>
+                <p style="margin-bottom:12px;">Пока нет хронологий. Будь первым!</p>
+                <a href="editor.html">Создать хронологию →</a>
+            </div>
+        </div>
+
+        <!-- ===== СЕКЦИЯ: НЕДАВНО ДОБАВЛЕННЫЕ (резерв) ===== -->
+        <div class="section-header" style="margin-top: 30px;">
+            <h2>🆕 Недавно добавленные</h2>
+            <a href="#" onclick="loadLibrary(); return false;">Обновить</a>
+        </div>
+
+        <div class="games-grid" id="recentGrid">
+            <!-- Тут будет дублироваться несколько последних хронологий -->
         </div>
 
     </div>
 
+    <!-- ===== КНОПКА "НАВЕРХ" ===== -->
     <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
+    <!-- ===== ПОДВАЛ ===== -->
     <footer>
-        <p>Fanlogya — магазин фанатских хронологий игр и вселенных</p>
+        <p>Fanlogya — библиотека фанатских хронологий игр и вселенных</p>
         <p style="font-size:0.8rem; margin-top:4px;">Сделано с <span class="heart">❤</span> Димой · 2026</p>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        // ===== ЗАГРУЗКА БИБЛИОТЕКИ =====
+        function loadLibrary() {
+            const grid = document.getElementById('libraryGrid');
+            const recentGrid = document.getElementById('recentGrid');
+            
+            // Получаем данные из localStorage
+            let library = JSON.parse(localStorage.getItem('fanlogya_library') || '[]');
+
+            // Если библиотека пуста — показываем заглушку
+            if (library.length === 0) {
+                grid.innerHTML = `
+                    <div class="library-empty">
+                        <span>📭</span>
+                        <p style="margin-bottom:12px;">Пока нет хронологий. Будь первым!</p>
+                        <a href="editor.html">Создать хронологию →</a>
+                    </div>
+                `;
+                recentGrid.innerHTML = `
+                    <div class="library-empty" style="padding:20px;">
+                        <span>⏳</span>
+                        <p>Нет недавних хронологий</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Показываем ВСЕ хронологии (от новых к старым)
+            const allLores = library.slice().reverse();
+            let gridHTML = '';
+            allLores.forEach(lore => {
+                gridHTML += `
+                    <div class="game-card" onclick="openLoreById('${lore.id}')">
+                        <span class="icon">${lore.icon || '📖'}</span>
+                        <div class="game-title">${lore.title}</div>
+                        <div class="game-sub">${lore.universe || 'Неизвестная вселенная'}</div>
+                        <div class="game-rating">★★★★☆</div>
+                        <div class="author-badge">👤 ${lore.author || 'Аноним'} · ${lore.date || ''}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = gridHTML;
+
+            // Показываем последние 4 хронологии в "Недавно добавленные"
+            const recent = library.slice(-4).reverse();
+            let recentHTML = '';
+            recent.forEach(lore => {
+                recentHTML += `
+                    <div class="game-card" onclick="openLoreById('${lore.id}')">
+                        <span class="icon">${lore.icon || '📖'}</span>
+                        <div class="game-title">${lore.title}</div>
+                        <div class="game-sub">${lore.universe || 'Неизвестная вселенная'}</div>
+                        <div class="game-rating">★★★★☆</div>
+                        <div class="author-badge">👤 ${lore.author || 'Аноним'}</div>
+                    </div>
+                `;
+            });
+            // Если меньше 4 — добиваем пустыми карточками
+            while (recent.length < 4) {
+                recentHTML += `
+                    <div class="game-card add-card" style="opacity:0.3;">
+                        <span class="icon">⏳</span>
+                        <div class="game-title" style="color:#445566;">Скоро</div>
+                        <div class="game-sub" style="color:#334455;">Новая хронология</div>
+                    </div>
+                `;
+                recent.push({}); // чтобы цикл не был бесконечным
+            }
+            recentGrid.innerHTML = recentHTML;
+        }
+
+        // ===== ОТКРЫТЬ ХРОНОЛОГИЮ ПО ID =====
+        function openLoreById(id) {
+            const library = JSON.parse(localStorage.getItem('fanlogya_library') || '[]');
+            const lore = library.find(item => String(item.id) === String(id));
+            if (!lore) {
+                alert('❌ Хронология не найдена! Возможно, она была удалена.');
+                return;
+            }
+            
+            // Сохраняем в sessionStorage для просмотра
+            sessionStorage.setItem('current_lore', JSON.stringify(lore));
+            window.location.href = 'lore-viewer.html';
+        }
+
+        // ===== ОБНОВЛЕНИЕ БИБЛИОТЕКИ (вызывается из редактора) =====
+        function updateLibrary() {
+            loadLibrary();
+        }
+
+        // ===== ПОИСК =====
+        function searchGames() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('#libraryGrid .game-card, #recentGrid .game-card');
+            cards.forEach(card => {
+                const title = card.querySelector('.game-title')?.textContent?.toLowerCase() || '';
+                const sub = card.querySelector('.game-sub')?.textContent?.toLowerCase() || '';
+                card.style.display = (title.includes(query) || sub.includes(query)) ? 'block' : 'none';
+            });
+        }
+
+        // ===== КНОПКИ КАТЕГОРИЙ =====
+        function showMain() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== ОБРАБОТКА КЛИКОВ ПО КАТЕГОРИЯМ =====
+        document.querySelectorAll('.nav-categories a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-categories a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                // Просто показываем все карточки при клике на категорию
+                document.querySelectorAll('#libraryGrid .game-card, #recentGrid .game-card').forEach(c => c.style.display = 'block');
+                showMain();
+            });
+        });
+
+        // ===== ЗАГРУЗКА ПРИ СТАРТЕ =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLibrary();
+        });
+
+        // ===== ПРОВЕРКА: если открыли редактор и вернулись — обновляем =====
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'fanlogya_library') {
+                loadLibrary();
+            }
+        });
+    </script>
+
 </body>
 </html>
