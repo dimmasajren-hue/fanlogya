@@ -17,7 +17,6 @@
             flex-direction: column;
         }
 
-        /* ===== ШАПКА ===== */
         header {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             padding: 10px 24px;
@@ -59,7 +58,6 @@
         }
         .user-badge .mod { color: #f5a623; font-weight: 700; }
 
-        /* ===== ОСНОВНАЯ СЕТКА ===== */
         .chat-app {
             display: flex;
             flex: 1;
@@ -72,7 +70,6 @@
             min-height: 400px;
         }
 
-        /* ===== БОКОВАЯ ПАНЕЛЬ (ГРУППЫ) ===== */
         .side-panel {
             width: 220px;
             background: #0d0d1a;
@@ -121,6 +118,9 @@
             font-size: 0.85rem;
             font-weight: 600;
             color: #e0e8f0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .group-item .g-count {
             font-size: 0.6rem;
@@ -135,6 +135,14 @@
             background: #1a1a30;
             padding: 1px 6px;
             border-radius: 20px;
+        }
+        .group-item .g-join {
+            font-size: 0.6rem;
+            color: #4caf50;
+            background: #1a1a30;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-weight: 700;
         }
         .group-item .g-delete {
             background: transparent;
@@ -167,7 +175,6 @@
             transform: none;
         }
 
-        /* ===== ЧАТ ===== */
         .chat-main {
             flex: 1;
             display: flex;
@@ -352,6 +359,80 @@
             border-bottom: 1px solid #1a1a3a;
         }
 
+        /* ===== МОДАЛЬНОЕ ОКНО ДЛЯ СОЗДАНИЯ ГРУППЫ ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #0d0d1a;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 420px;
+            width: 90%;
+            border: 1px solid #1a1a3a;
+        }
+        .modal-box h2 {
+            color: #f5a623;
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+        }
+        .modal-box label {
+            display: block;
+            color: #e0e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+        .modal-box input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal-box .modal-actions .btn-create {
+            background: #e94560;
+            color: #fff;
+        }
+        .modal-box .modal-actions .btn-create:hover {
+            background: #ff5a7a;
+        }
+        .modal-box .modal-actions .btn-cancel {
+            background: #1a1a3a;
+            color: #8899aa;
+        }
+        .modal-box .modal-actions .btn-cancel:hover {
+            background: #2a2a4a;
+        }
+
         /* ===== АДАПТИВ ===== */
         @media (max-width: 700px) {
             .chat-app { flex-direction: column; padding: 8px 10px; height: calc(100vh - 70px); }
@@ -367,6 +448,7 @@
             .input-area { padding: 6px 10px; }
             .input-area input { font-size: 0.8rem; padding: 6px 12px; }
             .input-area button { padding: 6px 16px; font-size: 0.8rem; }
+            .modal-box { padding: 20px; }
         }
     </style>
 </head>
@@ -424,6 +506,23 @@
 
     </div>
 
+    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ СОЗДАНИЯ ГРУППЫ ===== -->
+    <div class="modal-overlay" id="createGroupModal">
+        <div class="modal-box">
+            <h2>➕ Создать группу</h2>
+            <label>📌 Название группы</label>
+            <input type="text" id="groupNameInput" placeholder="Например: Фанаты Half-Life">
+            <label>🎨 Иконка (эмодзи)</label>
+            <input type="text" id="groupIconInput" placeholder="🧬" value="💬" maxlength="2">
+            <label>👥 Максимум участников</label>
+            <input type="number" id="groupMaxMembersInput" placeholder="Например: 50" value="50" min="2" max="1000">
+            <div class="modal-actions">
+                <button class="btn-create" onclick="confirmCreateGroup()">✅ Создать</button>
+                <button class="btn-cancel" onclick="closeCreateGroupModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ============================================================
     FIREBASE
     ============================================================ -->
@@ -449,7 +548,7 @@
         const auth = firebase.auth();
 
         let currentUser = null;
-        let currentGroupId = 'global'; // 'global' или id группы
+        let currentGroupId = 'global';
         let messagesUnsubscribe = null;
         let groupsUnsubscribe = null;
 
@@ -457,7 +556,7 @@
         // МОДЕРАТОРЫ
         // ============================================================
         const MODERATORS = [
-            "ТВОЙ_UID_ИЗ_FIREBASE"  // ← ЗАМЕНИ НА СВОЙ!
+            "CT2bmCrOKvV8NUT7OC1HYt3fhoR2"
         ];
 
         function isModerator(user) {
@@ -469,6 +568,13 @@
             if (!user) return false;
             if (isModerator(user)) return true;
             return group.adminId === user.uid;
+        }
+
+        function isGroupMember(group, user) {
+            if (!user) return false;
+            if (isGroupAdmin(group, user)) return true;
+            const members = group.members || [];
+            return members.includes(user.uid);
         }
 
         // ============================================================
@@ -484,6 +590,10 @@
         const groupsList = document.getElementById('groupsList');
         const createGroupBtn = document.getElementById('createGroupBtn');
         const leaveGroupBtn = document.getElementById('leaveGroupBtn');
+        const modal = document.getElementById('createGroupModal');
+        const groupNameInput = document.getElementById('groupNameInput');
+        const groupIconInput = document.getElementById('groupIconInput');
+        const groupMaxMembersInput = document.getElementById('groupMaxMembersInput');
 
         // ============================================================
         // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
@@ -510,6 +620,75 @@
         function scrollToBottom() {
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
+
+        // ============================================================
+        // МОДАЛЬНОЕ ОКНО
+        // ============================================================
+        function openCreateGroupModal() {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            modal.classList.add('active');
+            groupNameInput.value = '';
+            groupIconInput.value = '💬';
+            groupMaxMembersInput.value = '50';
+            groupNameInput.focus();
+        }
+
+        function closeCreateGroupModal() {
+            modal.classList.remove('active');
+        }
+
+        async function confirmCreateGroup() {
+            const name = groupNameInput.value.trim();
+            if (!name) {
+                alert('❌ Введи название группы!');
+                groupNameInput.focus();
+                return;
+            }
+            const icon = groupIconInput.value.trim() || '💬';
+            const maxMembers = parseInt(groupMaxMembersInput.value) || 50;
+
+            try {
+                const groupData = {
+                    name: name,
+                    icon: icon,
+                    maxMembers: maxMembers,
+                    adminId: currentUser.uid,
+                    adminName: currentUser.displayName || currentUser.email || 'Пользователь',
+                    members: [currentUser.uid],
+                    memberCount: 1,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                const docRef = await db.collection('chat_groups').add(groupData);
+                alert(`✅ Группа "${name}" создана! Максимум участников: ${maxMembers}`);
+                closeCreateGroupModal();
+                currentGroupId = docRef.id;
+                chatTitle.textContent = `${icon} ${name}`;
+                chatInfo.textContent = `👤 1 / ${maxMembers} участников`;
+                leaveGroupBtn.style.display = 'block';
+                loadMessages();
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // Закрытие модалки по клику вне окна
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeCreateGroupModal();
+        });
+
+        // Enter в полях модалки
+        groupNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmCreateGroup();
+        });
+        groupIconInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmCreateGroup();
+        });
+        groupMaxMembersInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmCreateGroup();
+        });
 
         // ============================================================
         // ЗАГРУЗКА ГРУПП
@@ -541,16 +720,31 @@
                     let html = '';
                     groups.forEach(g => {
                         const isAdmin = currentUser && isGroupAdmin(g, currentUser);
+                        const isMember = currentUser && isGroupMember(g, currentUser);
                         const isActive = currentGroupId === g.id;
-                        html += `
-                            <div class="group-item ${isActive ? 'active' : ''}" onclick="switchGroup('${g.id}')">
-                                <span class="g-icon">${g.icon || '💬'}</span>
-                                <span class="g-name">${escapeHtml(g.name)}</span>
-                                <span class="g-count">${g.memberCount || 0}</span>
-                                ${isAdmin ? '<span class="g-admin">👑</span>' : ''}
-                                ${isAdmin ? `<button class="g-delete" onclick="event.stopPropagation(); deleteGroup('${g.id}')">✖</button>` : ''}
-                            </div>
-                        `;
+                        const maxMembers = g.maxMembers || '∞';
+
+                        if (isMember || isAdmin) {
+                            html += `
+                                <div class="group-item ${isActive ? 'active' : ''}" onclick="switchGroup('${g.id}')">
+                                    <span class="g-icon">${g.icon || '💬'}</span>
+                                    <span class="g-name">${escapeHtml(g.name)}</span>
+                                    <span class="g-count">${g.memberCount || 0} / ${maxMembers}</span>
+                                    ${isAdmin ? '<span class="g-admin">👑</span>' : ''}
+                                    ${isAdmin ? `<button class="g-delete" onclick="event.stopPropagation(); deleteGroup('${g.id}')">✖</button>` : ''}
+                                </div>
+                            `;
+                        } else {
+                            // Не участник — показываем кнопку «Присоединиться»
+                            html += `
+                                <div class="group-item" onclick="joinGroup('${g.id}')">
+                                    <span class="g-icon">${g.icon || '💬'}</span>
+                                    <span class="g-name">${escapeHtml(g.name)}</span>
+                                    <span class="g-count">${g.memberCount || 0} / ${maxMembers}</span>
+                                    <span class="g-join">➕ Присоединиться</span>
+                                </div>
+                            `;
+                        }
                     });
                     groupsList.innerHTML = html;
                 }, (error) => {
@@ -564,10 +758,53 @@
         }
 
         // ============================================================
+        // ПРИСОЕДИНЕНИЕ К ГРУППЕ
+        // ============================================================
+        async function joinGroup(groupId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+
+            try {
+                const doc = await db.collection('chat_groups').doc(groupId).get();
+                if (!doc.exists) {
+                    alert('❌ Группа не найдена');
+                    return;
+                }
+                const data = doc.data();
+                const members = data.members || [];
+                const maxMembers = data.maxMembers || 100;
+
+                if (members.includes(currentUser.uid)) {
+                    alert('✅ Ты уже в этой группе!');
+                    switchGroup(groupId);
+                    return;
+                }
+
+                if (members.length >= maxMembers) {
+                    alert('❌ Группа заполнена! Максимум участников: ' + maxMembers);
+                    return;
+                }
+
+                members.push(currentUser.uid);
+                await db.collection('chat_groups').doc(groupId).update({
+                    members: members,
+                    memberCount: members.length
+                });
+                alert('✅ Ты присоединился к группе!');
+                switchGroup(groupId);
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
         // ПЕРЕКЛЮЧЕНИЕ МЕЖДУ ГРУППАМИ
         // ============================================================
         function switchGroup(groupId) {
             if (currentGroupId === groupId) return;
+
             if (groupId === 'global') {
                 currentGroupId = 'global';
                 chatTitle.textContent = '💬 Общий чат';
@@ -577,24 +814,21 @@
                 return;
             }
 
-            // Проверяем, состоит ли пользователь в группе
-            if (currentUser) {
-                db.collection('chat_groups').doc(groupId).get().then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const members = data.members || [];
-                        if (members.includes(currentUser.uid) || isModerator(currentUser) || data.adminId === currentUser.uid) {
-                            currentGroupId = groupId;
-                            chatTitle.textContent = `${data.icon || '💬'} ${data.name}`;
-                            chatInfo.textContent = `👤 ${data.memberCount || 0} участников`;
-                            leaveGroupBtn.style.display = 'block';
-                            loadMessages();
-                        } else {
-                            alert('❌ Ты не участник этой группы!');
-                        }
-                    }
-                });
-            }
+            db.collection('chat_groups').doc(groupId).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const maxMembers = data.maxMembers || '∞';
+                    currentGroupId = groupId;
+                    chatTitle.textContent = `${data.icon || '💬'} ${data.name}`;
+                    chatInfo.textContent = `👤 ${data.memberCount || 0} / ${maxMembers} участников`;
+                    leaveGroupBtn.style.display = 'block';
+                    loadMessages();
+                } else {
+                    alert('❌ Группа не найдена');
+                }
+            }).catch(err => {
+                alert('❌ Ошибка: ' + err.message);
+            });
         }
 
         // ============================================================
@@ -742,74 +976,6 @@
         }
 
         // ============================================================
-        // СОЗДАНИЕ ГРУППЫ
-        // ============================================================
-        async function createGroup() {
-            if (!currentUser) {
-                alert('❌ Войди в аккаунт!');
-                return;
-            }
-
-            const name = prompt('📌 Название группы:');
-            if (!name) return;
-            const icon = prompt('🎨 Иконка (эмодзи):', '💬') || '💬';
-
-            try {
-                const groupData = {
-                    name: name,
-                    icon: icon,
-                    adminId: currentUser.uid,
-                    adminName: currentUser.displayName || currentUser.email || 'Пользователь',
-                    members: [currentUser.uid],
-                    memberCount: 1,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                const docRef = await db.collection('chat_groups').add(groupData);
-                alert(`✅ Группа "${name}" создана!`);
-                currentGroupId = docRef.id;
-                chatTitle.textContent = `${icon} ${name}`;
-                chatInfo.textContent = '👤 1 участник';
-                leaveGroupBtn.style.display = 'block';
-                loadMessages();
-            } catch (error) {
-                alert('❌ Ошибка: ' + error.message);
-            }
-        }
-
-        // ============================================================
-        // ПРИСОЕДИНЕНИЕ К ГРУППЕ
-        // ============================================================
-        async function joinGroup(groupId) {
-            if (!currentUser) {
-                alert('❌ Войди в аккаунт!');
-                return;
-            }
-
-            try {
-                const doc = await db.collection('chat_groups').doc(groupId).get();
-                if (!doc.exists) {
-                    alert('❌ Группа не найдена');
-                    return;
-                }
-                const data = doc.data();
-                const members = data.members || [];
-                if (members.includes(currentUser.uid)) {
-                    alert('✅ Ты уже в этой группе!');
-                    return;
-                }
-                members.push(currentUser.uid);
-                await db.collection('chat_groups').doc(groupId).update({
-                    members: members,
-                    memberCount: members.length
-                });
-                alert('✅ Ты присоединился к группе!');
-                switchGroup(groupId);
-            } catch (error) {
-                alert('❌ Ошибка: ' + error.message);
-            }
-        }
-
-        // ============================================================
         // ВЫХОД ИЗ ГРУППЫ
         // ============================================================
         async function leaveGroup() {
@@ -850,7 +1016,7 @@
         }
 
         // ============================================================
-        // УДАЛЕНИЕ ГРУППЫ (только администратор)
+        // УДАЛЕНИЕ ГРУППЫ (ТОЛЬКО АДМИН)
         // ============================================================
         async function deleteGroup(groupId) {
             if (!currentUser) {
@@ -877,7 +1043,6 @@
                 msgs.forEach(d => batch.delete(d.ref));
                 await batch.commit();
 
-                // Удаляем саму группу
                 await db.collection('chat_groups').doc(groupId).delete();
 
                 alert('✅ Группа удалена');
@@ -907,16 +1072,18 @@
                 sendBtn.disabled = false;
                 messageInput.placeholder = 'Написать сообщение...';
                 createGroupBtn.disabled = false;
+                createGroupBtn.textContent = '➕ Создать группу';
+                createGroupBtn.onclick = openCreateGroupModal;
             } else {
                 userBadge.textContent = '👤 Гость';
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
                 messageInput.placeholder = '🔐 Войди, чтобы писать';
                 createGroupBtn.disabled = true;
+                createGroupBtn.textContent = '🔐 Войди для создания';
                 chatStatus.innerHTML = '🔐 <a href="login.html" style="color:#e94560;">Войди</a> в аккаунт';
             }
 
-            // Перезагружаем данные
             if (messagesUnsubscribe) {
                 messagesUnsubscribe();
                 messagesUnsubscribe = null;
@@ -939,7 +1106,6 @@
                 sendMessage();
             }
         });
-        createGroupBtn.addEventListener('click', createGroup);
 
         // ============================================================
         // ЗАКРЫТИЕ ПОДПИСОК
