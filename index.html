@@ -6,43 +6,160 @@
     <title>Fanlogya — Библиотека хронологий</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ===== */
-        .library-empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
+        /* ===== ОБЩИЕ СТИЛИ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e94560;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { font-size: 2.2rem; }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo span {
+            font-size: 0.7rem;
             color: #667788;
-        }
-        .library-empty span {
-            font-size: 4rem;
             display: block;
-            margin-bottom: 16px;
+            font-weight: 400;
+            letter-spacing: 2px;
         }
-        .library-empty a {
-            color: #e94560;
-            font-weight: 600;
-            text-decoration: none;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .library-empty a:hover {
-            text-decoration: underline;
-        }
-        .btn-create {
-            background: #e94560;
-            padding: 8px 24px;
+        .header-right input {
+            background: #1a1a30;
+            border: 1px solid #2a2a4a;
             border-radius: 30px;
-            color: #fff !important;
-            text-decoration: none;
-            font-weight: 600;
+            padding: 10px 20px;
+            color: #e0e0e0;
+            width: 220px;
+            font-size: 0.9rem;
             transition: 0.3s;
         }
-        .btn-create:hover {
-            background: #ff5a7a;
-            transform: scale(1.05);
+        .header-right input:focus {
+            outline: none;
+            border-color: #e94560;
+            width: 280px;
         }
-        .author-badge {
-            font-size: 0.6rem;
-            color: #445566;
-            margin-top: 4px;
+        .header-right input::placeholder { color: #445566; }
+        .user-icon { font-size: 1.8rem; cursor: pointer; transition: 0.3s; }
+        .user-icon:hover { transform: scale(1.1); }
+
+        /* ===== КАТЕГОРИИ ===== */
+        .nav-categories {
+            background: #0d0d1a;
+            padding: 12px 30px;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1a1a3a;
+            overflow-x: auto;
+        }
+        .nav-categories a {
+            color: #8899aa;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 6px 4px;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .nav-categories a:hover { color: #e0e8f0; border-bottom-color: #e94560; }
+        .nav-categories a.active { color: #f5a623; border-bottom-color: #f5a623; }
+
+        /* ===== КОНТЕЙНЕР ===== */
+        .container { max-width: 1300px; margin: 0 auto; padding: 25px 25px 50px; }
+
+        /* ===== БАННЕР ===== */
+        .banner {
+            background: linear-gradient(135deg, #0f3460, #1a1a3e);
+            border-radius: 20px;
+            padding: 35px 40px;
+            margin-bottom: 40px;
+            border: 1px solid #1a2a4a;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner::after {
+            content: '🧬';
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 10rem;
+            opacity: 0.08;
+        }
+        .banner h2 { font-size: 1.8rem; color: #f5a623; }
+        .banner p { color: #99aabb; max-width: 600px; margin: 6px 0 12px; }
+        .banner .tag {
+            display: inline-block;
+            background: #e94560;
+            padding: 4px 18px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* ===== СЕКЦИИ ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 35px 0 20px;
+        }
+        .section-header h2 { font-size: 1.5rem; color: #e0e8f0; font-weight: 700; }
+        .section-header a { color: #e94560; font-size: 0.85rem; text-decoration: none; font-weight: 600; }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ===== СЕТКА ===== */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== КАРТОЧКА ===== */
+        .game-card {
+            background: #111122;
+            border-radius: 16px;
+            padding: 18px 16px;
+            text-align: center;
+            border: 1px solid #1a1a3a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .game-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: #e94560;
+            box-shadow: 0 12px 40px rgba(233, 69, 96, 0.2);
         }
         .game-card .icon {
             font-size: 3.8rem;
@@ -50,9 +167,97 @@
             margin-bottom: 8px;
             transition: 0.3s;
         }
-        .game-card:hover .icon {
-            transform: scale(1.1) rotate(-5deg);
+        .game-card:hover .icon { transform: scale(1.1) rotate(-5deg); }
+        .game-card .game-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #e0e8f0;
+            margin-bottom: 2px;
         }
+        .game-card .game-sub { font-size: 0.7rem; color: #667788; letter-spacing: 0.5px; }
+        .game-card .game-rating {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: #f5a623;
+        }
+        .game-card .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e94560;
+            font-size: 0.55rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .game-card.add-card {
+            border-style: dashed;
+            border-color: #2a2a4a;
+            opacity: 0.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 160px;
+        }
+        .game-card.add-card:hover { opacity: 0.8; border-color: #f5a623; transform: translateY(-4px); }
+        .game-card.add-card .icon { font-size: 2.8rem; opacity: 0.5; }
+
+        /* ===== КНОПКИ УПРАВЛЕНИЯ ===== */
+        .lore-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .lore-actions button {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 4px 12px;
+            color: #8899aa;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lore-actions button:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+        .lore-actions button.danger:hover {
+            border-color: #e94560;
+            background: #e94560;
+            color: #fff;
+        }
+        .lore-actions button.pin:hover {
+            border-color: #f5a623;
+            background: #f5a623;
+            color: #0a0a0a;
+        }
+
+        /* ===== БЕЙДЖИ ===== */
+        .pin-badge {
+            background: #f5a623;
+            color: #0a0a0a;
+            font-size: 0.55rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+        .author-badge {
+            font-size: 0.6rem;
+            color: #445566;
+            margin-top: 4px;
+        }
+
+        /* ===== ЗАГРУЗКА ===== */
         .loading-spinner {
             grid-column: 1 / -1;
             text-align: center;
@@ -69,27 +274,27 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.8); }
         }
-        .back-top {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: #e94560;
-            color: #fff;
-            border: none;
-            padding: 14px 18px;
-            border-radius: 50%;
-            font-size: 1.3rem;
-            cursor: pointer;
-            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.4);
-            transition: 0.3s;
-            z-index: 999;
-        }
-        .back-top:hover {
-            transform: scale(1.1);
-            background: #ff5a7a;
-        }
 
-        /* ===== СТИЛИ ДЛЯ АККАУНТОВ ===== */
+        /* ===== ПУСТАЯ БИБЛИОТЕКА ===== */
+        .library-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #667788;
+        }
+        .library-empty span {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+        .library-empty a {
+            color: #e94560;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .library-empty a:hover { text-decoration: underline; }
+
+        /* ===== ПОЛЬЗОВАТЕЛЬ ===== */
         .user-info {
             display: flex;
             align-items: center;
@@ -131,32 +336,54 @@
             transform: scale(1.05);
         }
 
-        /* ===== КНОПКИ УПРАВЛЕНИЯ В КАРТОЧКЕ ===== */
-        .lore-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        .admin-panel {
+            background: #1a1a3a;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 0 30px 0;
+            border: 1px solid #f5a623;
+            display: none;
         }
-        .lore-actions button {
-            background: transparent;
+        .admin-panel.visible { display: block; }
+        .admin-panel h3 {
+            color: #f5a623;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+        .admin-panel .stat {
+            display: inline-block;
+            background: #0d0d1a;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-right: 10px;
+            margin-bottom: 6px;
+            color: #8899aa;
+            font-size: 0.85rem;
+        }
+        .admin-panel .stat span {
+            color: #e0e8f0;
+            font-weight: 700;
+        }
+        .admin-panel .admin-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .admin-panel .admin-actions button {
+            background: #1a1a3a;
             border: 1px solid #2a2a4a;
             border-radius: 20px;
-            padding: 4px 14px;
+            padding: 6px 18px;
             color: #8899aa;
-            font-size: 0.7rem;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 0.8rem;
         }
-        .lore-actions button:hover {
-            border-color: #e94560;
-            color: #e94560;
-        }
-        .lore-actions button.delete:hover {
-            border-color: #e94560;
-            background: #e94560;
-            color: #fff;
+        .admin-panel .admin-actions button:hover {
+            border-color: #f5a623;
+            color: #f5a623;
         }
 
         /* ===== ОКНО ПРОСМОТРА ===== */
@@ -211,16 +438,9 @@
             margin-bottom: 25px;
             flex-wrap: wrap;
         }
-        .lore-viewer-box .header .icon {
-            font-size: 4rem;
-        }
-        .lore-viewer-box .header .info h2 {
-            color: #f5a623;
-            font-size: 2rem;
-        }
-        .lore-viewer-box .header .info p {
-            color: #8899aa;
-        }
+        .lore-viewer-box .header .icon { font-size: 4rem; }
+        .lore-viewer-box .header .info h2 { color: #f5a623; font-size: 2rem; }
+        .lore-viewer-box .header .info p { color: #8899aa; }
         .lore-viewer-box .header .tags {
             display: flex;
             gap: 10px;
@@ -255,7 +475,7 @@
             color: #ddeeff;
         }
 
-        /* ===== НИЖНИЙ БЛОК С ЛАЙКАМИ ===== */
+        /* ===== НИЖНИЙ БЛОК ===== */
         .lore-footer {
             display: flex;
             align-items: center;
@@ -288,38 +508,83 @@
             background: #e94560;
             color: #fff;
         }
-        .like-btn .heart {
-            font-size: 1.2rem;
-        }
-        .like-btn .count {
-            font-weight: 700;
-            min-width: 20px;
-        }
-        .like-btn .heart.empty {
-            color: #667788;
-        }
-        .like-btn.liked .heart.empty {
-            color: #fff;
-        }
+        .like-btn .heart { font-size: 1.2rem; }
+        .like-btn .count { font-weight: 700; min-width: 20px; }
+        .like-btn .heart.empty { color: #667788; }
+        .like-btn.liked .heart.empty { color: #fff; }
         .lore-meta {
             display: flex;
             gap: 16px;
             color: #667788;
             font-size: 0.8rem;
         }
-        .lore-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .lore-meta span { display: flex; align-items: center; gap: 4px; }
 
+        /* ===== АНИМАЦИИ ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        /* ===== АДАПТИВ ===== */
         @media (max-width: 700px) {
+            header { flex-direction: column; align-items: stretch; gap: 12px; }
+            .header-right { flex-wrap: wrap; }
+            .header-right input { width: 100%; }
+            .header-right input:focus { width: 100%; }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+            .banner { padding: 24px; }
+            .banner h2 { font-size: 1.4rem; }
+            .nav-categories { padding: 10px 16px; gap: 14px; }
+            .nav-categories a { font-size: 0.75rem; }
             .lore-viewer-box { padding: 20px; }
             .lore-viewer-box .header { flex-direction: column; text-align: center; }
+            .admin-panel { padding: 16px; }
+        }
+        @media (max-width: 450px) {
+            .games-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .game-card .icon { font-size: 2.8rem; }
+            .game-card .game-title { font-size: 0.8rem; }
+        }
+
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e94560; }
+
+        /* ===== КНОПКА НАВЕРХ ===== */
+        .back-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.4);
+            transition: 0.3s;
+            z-index: 999;
+        }
+        .back-top:hover {
+            transform: scale(1.1);
+            background: #ff5a7a;
+        }
+        .btn-create {
+            background: #e94560;
+            padding: 8px 24px;
+            border-radius: 30px;
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-create:hover {
+            background: #ff5a7a;
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -354,6 +619,20 @@
 
     <!-- ===== ОСНОВНОЙ КОНТЕЙНЕР ===== -->
     <div class="container">
+
+        <!-- ===== АДМИН-ПАНЕЛЬ (только для модератора) ===== -->
+        <div id="adminPanel" class="admin-panel">
+            <h3>🛡️ Панель модератора</h3>
+            <div>
+                <span class="stat">📚 Всего хронологий: <span id="totalLores">0</span></span>
+                <span class="stat">👤 Всего пользователей: <span id="totalUsers">0</span></span>
+                <span class="stat">❤️ Всего лайков: <span id="totalLikes">0</span></span>
+            </div>
+            <div class="admin-actions">
+                <button onclick="refreshStats()">🔄 Обновить статистику</button>
+                <button onclick="exportData()">📥 Экспорт данных</button>
+            </div>
+        </div>
 
         <!-- ===== БАННЕР ===== -->
         <div class="banner">
@@ -426,14 +705,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ===== КОНФИГ FIREBASE (ВСТАВЬ СВОЙ!) =====
+        // ============================================================
+        // КОНФИГ FIREBASE
+        // ============================================================
         const firebaseConfig = {
-          apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
-          authDomain: "fanlogya.firebaseapp.com",
-          projectId: "fanlogya",
-          storageBucket: "fanlogya.firebasestorage.app",
-          messagingSenderId: "448128302344",
-          appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+            apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+            authDomain: "fanlogya.firebaseapp.com",
+            projectId: "fanlogya",
+            storageBucket: "fanlogya.firebasestorage.app",
+            messagingSenderId: "448128302344",
+            appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -444,23 +725,46 @@
         let currentLores = [];
 
         // ============================================================
+        // СПИСОК МОДЕРАТОРОВ — ВСТАВЬ СВОЙ UID!
+        // ============================================================
+        const MODERATORS = [
+            "lMFBDsDlKcVLC2CNlaxyhSZv5BK2"  // ← ЗАМЕНИ НА СВОЙ!
+        ];
+
+        function isModerator(user) {
+            if (!user) return false;
+            return MODERATORS.includes(user.uid);
+        }
+
+        // ============================================================
         // УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ
         // ============================================================
 
         function updateUserUI(user) {
             const section = document.getElementById('userSection');
+            const panel = document.getElementById('adminPanel');
+
             if (user) {
                 const name = user.displayName || user.email || 'Пользователь';
+                const isMod = isModerator(user);
+                const badge = isMod ? ' 🛡️ Модератор' : '';
                 section.innerHTML = `
                     <div class="user-info">
-                        <span class="name">👤 ${name}</span>
+                        <span class="name">👤 ${name}${badge}</span>
                         <button class="logout-btn" onclick="logout()">Выйти</button>
                     </div>
                 `;
+                if (isMod) {
+                    panel.classList.add('visible');
+                    refreshStats();
+                } else {
+                    panel.classList.remove('visible');
+                }
             } else {
                 section.innerHTML = `
                     <a href="login.html" class="auth-btn">🔐 Войти</a>
                 `;
+                panel.classList.remove('visible');
             }
         }
 
@@ -474,6 +778,32 @@
             updateUserUI(user);
             loadLibrary();
         });
+
+        // ============================================================
+        // СТАТИСТИКА ДЛЯ МОДЕРАТОРА
+        // ============================================================
+
+        async function refreshStats() {
+            try {
+                const snapshot = await db.collection('lores').get();
+                const lores = [];
+                snapshot.forEach(doc => lores.push(doc.data()));
+
+                document.getElementById('totalLores').textContent = lores.length;
+
+                let totalLikes = 0;
+                lores.forEach(l => totalLikes += (l.likes || 0));
+                document.getElementById('totalLikes').textContent = totalLikes;
+
+                document.getElementById('totalUsers').textContent = '👀 в консоли';
+            } catch (e) {
+                console.error('Ошибка статистики:', e);
+            }
+        }
+
+        function exportData() {
+            alert('📥 Функция экспорта в разработке!');
+        }
 
         // ============================================================
         // ЗАГРУЗКА БИБЛИОТЕКИ
@@ -499,12 +829,16 @@
                         id: doc.id,
                         ...data,
                         likes: data.likes || 0,
-                        authorId: data.authorId || null
+                        authorId: data.authorId || null,
+                        pinned: data.pinned || false
                     });
                 });
                 currentLores = lores;
 
-                if (lores.length === 0) {
+                // Сортировка: закреплённые сверху
+                const sorted = [...lores].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+                if (sorted.length === 0) {
                     grid.innerHTML = `
                         <div class="library-empty">
                             <span>📭</span>
@@ -523,22 +857,28 @@
 
                 // ===== ОТОБРАЖЕНИЕ ВСЕХ ХРОНОЛОГИЙ =====
                 let gridHTML = '';
-                lores.forEach(lore => {
+                sorted.forEach(lore => {
                     const isOwner = currentUser && lore.authorId === currentUser.uid;
+                    const isMod = isModerator(currentUser);
+                    const showModActions = isMod || isOwner;
+
                     gridHTML += `
                         <div class="game-card" onclick="openLoreById('${lore.id}')">
                             <span class="icon">${lore.icon || '📖'}</span>
-                            <div class="game-title">${escapeHtml(lore.title || 'Без названия')}</div>
+                            <div class="game-title">
+                                ${escapeHtml(lore.title || 'Без названия')}
+                                ${lore.pinned ? '<span class="pin-badge">📌 Закреплено</span>' : ''}
+                            </div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
                             <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
                                 <span>❤️ ${lore.likes || 0}</span>
                                 <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
                             </div>
                             <div class="author-badge">📅 ${lore.date || ''}</div>
-                            ${isOwner ? `
+                            ${showModActions ? `
                                 <div class="lore-actions" onclick="event.stopPropagation();">
-                                    <button onclick="deleteLore('${lore.id}')" class="delete">🗑️ Удалить</button>
-                                    <button onclick="editLore('${lore.id}')">✏️ Редактировать</button>
+                                    ${isMod || isOwner ? `<button onclick="deleteLore('${lore.id}')" class="danger">🗑️ Удалить</button>` : ''}
+                                    ${isMod ? `<button onclick="pinLore('${lore.id}')" class="pin">📌 ${lore.pinned ? 'Открепить' : 'Закрепить'}</button>` : ''}
                                 </div>
                             ` : ''}
                         </div>
@@ -547,22 +887,26 @@
                 grid.innerHTML = gridHTML;
 
                 // ===== ПОСЛЕДНИЕ 4 =====
-                const recent = lores.slice(0, 4);
+                const recent = sorted.slice(0, 4);
                 let recentHTML = '';
                 recent.forEach(lore => {
                     const isOwner = currentUser && lore.authorId === currentUser.uid;
+                    const isMod = isModerator(currentUser);
                     recentHTML += `
                         <div class="game-card" onclick="openLoreById('${lore.id}')">
                             <span class="icon">${lore.icon || '📖'}</span>
-                            <div class="game-title">${escapeHtml(lore.title || 'Без названия')}</div>
+                            <div class="game-title">
+                                ${escapeHtml(lore.title || 'Без названия')}
+                                ${lore.pinned ? '<span class="pin-badge">📌</span>' : ''}
+                            </div>
                             <div class="game-sub">${escapeHtml(lore.universe || 'Неизвестная вселенная')}</div>
                             <div style="display:flex; justify-content:center; gap:12px; margin-top:4px; font-size:0.8rem; color:#667788;">
                                 <span>❤️ ${lore.likes || 0}</span>
                                 <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
                             </div>
-                            ${isOwner ? `
+                            ${(isMod || isOwner) ? `
                                 <div class="lore-actions" onclick="event.stopPropagation();">
-                                    <button onclick="deleteLore('${lore.id}')" class="delete">🗑️</button>
+                                    <button onclick="deleteLore('${lore.id}')" class="danger">🗑️</button>
                                 </div>
                             ` : ''}
                         </div>
@@ -594,16 +938,47 @@
         }
 
         // ============================================================
-        // УДАЛЕНИЕ ХРОНОЛОГИИ
+        // ФУНКЦИИ МОДЕРАТОРА
         // ============================================================
 
         async function deleteLore(loreId) {
             if (!currentUser) {
-                alert('❌ Войди в аккаунт, чтобы удалять хронологии!');
+                alert('❌ Войди в аккаунт!');
                 return;
             }
 
-            if (!confirm('🗑️ Ты точно хочешь удалить эту хронологию? Это нельзя отменить!')) {
+            const isMod = isModerator(currentUser);
+
+            try {
+                const doc = await db.collection('lores').doc(loreId).get();
+                if (!doc.exists) {
+                    alert('❌ Хронология не найдена!');
+                    return;
+                }
+
+                if (!isMod && doc.data().authorId !== currentUser.uid) {
+                    alert('❌ Ты не автор этой хронологии!');
+                    return;
+                }
+
+                const confirmMsg = isMod ?
+                    '🛡️ Ты модератор! Точно удалить эту хронологию?' :
+                    '🗑️ Ты точно хочешь удалить свою хронологию?';
+
+                if (!confirm(confirmMsg)) return;
+
+                await db.collection('lores').doc(loreId).delete();
+                alert('✅ Хронология удалена!');
+                loadLibrary();
+                refreshStats();
+            } catch (error) {
+                alert('❌ Ошибка удаления: ' + error.message);
+            }
+        }
+
+        async function pinLore(loreId) {
+            if (!currentUser || !isModerator(currentUser)) {
+                alert('❌ Только модератор может закреплять хронологии!');
                 return;
             }
 
@@ -613,33 +988,21 @@
                     alert('❌ Хронология не найдена!');
                     return;
                 }
-                if (doc.data().authorId !== currentUser.uid) {
-                    alert('❌ Ты не автор этой хронологии!');
-                    return;
-                }
 
-                await db.collection('lores').doc(loreId).delete();
-                alert('✅ Хронология удалена!');
+                const currentPinned = doc.data().pinned || false;
+                await db.collection('lores').doc(loreId).update({
+                    pinned: !currentPinned
+                });
+
+                alert(currentPinned ? '📌 Хронология откреплена!' : '📌 Хронология закреплена!');
                 loadLibrary();
             } catch (error) {
-                alert('❌ Ошибка удаления: ' + error.message);
+                alert('❌ Ошибка: ' + error.message);
             }
         }
 
         // ============================================================
-        // РЕДАКТИРОВАНИЕ ХРОНОЛОГИИ
-        // ============================================================
-
-        function editLore(loreId) {
-            if (!currentUser) {
-                alert('❌ Войди в аккаунт!');
-                return;
-            }
-            window.location.href = `editor.html?edit=${loreId}`;
-        }
-
-        // ============================================================
-        // ОТКРЫТИЕ ХРОНОЛОГИИ (С ЛАЙКАМИ)
+        // ОТКРЫТИЕ ХРОНОЛОГИИ
         // ============================================================
 
         async function openLoreById(id) {
@@ -671,17 +1034,20 @@
                 const loreId = doc.id;
                 const likes = lore.likes || 0;
                 const liked = localStorage.getItem('liked_' + loreId) === 'true';
+                const isMod = isModerator(currentUser);
+                const isOwner = currentUser && lore.authorId === currentUser.uid;
 
                 let html = `
                     <div class="header">
                         <span class="icon">${lore.icon || '📖'}</span>
                         <div class="info">
-                            <h2>${escapeHtml(lore.title || 'Без названия')}</h2>
+                            <h2>${escapeHtml(lore.title || 'Без названия')} ${lore.pinned ? '📌' : ''}</h2>
                             <p>${escapeHtml(lore.universe || 'Неизвестная вселенная')}</p>
                             <div class="tags">
                                 <span>${escapeHtml(lore.genre || 'Без жанра')}</span>
                                 <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
                                 <span>📅 ${lore.date || 'Неизвестно'}</span>
+                                ${lore.pinned ? '<span style="background:#f5a623; color:#0a0a0a;">📌 Закреплено</span>' : ''}
                             </div>
                         </div>
                     </div>
@@ -689,11 +1055,20 @@
                     <div class="content">${renderMarkdown(lore.content || 'Текст хронологии пуст.')}</div>
 
                     <div class="lore-footer">
-                        <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${loreId}')" id="likeBtn_${loreId}">
-                            <span class="heart ${liked ? '' : 'empty'}">❤️</span>
-                            <span class="count" id="likeCount_${loreId}">${likes}</span>
-                            <span>${liked ? 'Лайкнут' : 'Лайкнуть'}</span>
-                        </button>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                            <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${loreId}')" id="likeBtn_${loreId}">
+                                <span class="heart ${liked ? '' : 'empty'}">❤️</span>
+                                <span class="count" id="likeCount_${loreId}">${likes}</span>
+                                <span>${liked ? 'Лайкнут' : 'Лайкнуть'}</span>
+                            </button>
+                            ${isMod ? `
+                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:6px 16px; color:#e94560; cursor:pointer;">🗑️ Удалить</button>
+                                <button onclick="pinLore('${loreId}')" style="background:transparent; border:1px solid #f5a623; border-radius:20px; padding:6px 16px; color:#f5a623; cursor:pointer;">${lore.pinned ? '📌 Открепить' : '📌 Закрепить'}</button>
+                            ` : ''}
+                            ${isOwner && !isMod ? `
+                                <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:6px 16px; color:#e94560; cursor:pointer;">🗑️ Удалить</button>
+                            ` : ''}
+                        </div>
                         <div class="lore-meta">
                             <span>📅 ${lore.date || 'Неизвестно'}</span>
                             <span>👤 ${escapeHtml(lore.author || 'Аноним')}</span>
@@ -738,7 +1113,6 @@
                     });
                 }
 
-                // Обновляем интерфейс
                 const doc = await db.collection('lores').doc(loreId).get();
                 const newLikes = doc.data().likes || 0;
                 const countEl = document.getElementById('likeCount_' + loreId);
@@ -755,6 +1129,7 @@
                 }
 
                 loadLibrary();
+                refreshStats();
 
             } catch (error) {
                 alert('❌ Ошибка: ' + error.message);
