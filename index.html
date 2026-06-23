@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanlogya — Магазин хронологий</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===== ШАПКА ===== -->
+    <header>
+        <div class="logo">
+            <span class="logo-icon">📱</span>
+            <div>
+                <h1>Fanlogya</h1>
+                <span>Хроники фанатских вселенных</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <input type="text" placeholder="🔍 Найти хронологию..." id="searchInput" oninput="searchGames()">
+            <span class="user-icon">👤</span>
+        </div>
+    </header>
+
+    <!-- ===== КАТЕГОРИИ ===== -->
+    <div class="nav-categories">
+        <a href="#" class="active" onclick="showMain()">🏠 Все</a>
+        <a href="#" onclick="showMain()">🎮 Игры</a>
+        <a href="#" onclick="showMain()">🧩 Альтернативный лор</a>
+        <a href="#" onclick="showMain()">👾 Хоррор</a>
+        <a href="#" onclick="showMain()">🚀 Научная фантастика</a>
+        <a href="#" onclick="showMain()">⭐ Топ хронологий</a>
+    </div>
+
+    <!-- ===== КОНТЕЙНЕР ===== -->
+    <div class="container">
+
+        <!-- ГЛАВНАЯ СТРАНИЦА -->
+        <div id="mainPage">
+
+            <div class="banner">
+                <h2>⚡ Магазин хронологий</h2>
+                <p>Нажимай на иконку игры — и читай полную хронологию! Придумано Димой (11 лет).</p>
+                <span class="tag">🔥 2 хронологии доступны</span>
+            </div>
+
+            <div class="section-header">
+                <h2>⭐ Популярные хронологии</h2>
+                <a href="#">Смотреть все</a>
+            </div>
+
+            <div class="games-grid">
+
+                <!-- Часть 1 -->
+                <div class="game-card" onclick="openLore('lore1.html')">
+                    <span class="badge">Новое</span>
+                    <span class="icon">🧬</span>
+                    <div class="game-title">Half-Life: Backrooms</div>
+                    <div class="game-sub">Часть 1</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+
+                <!-- Часть 2 -->
+                <div class="game-card" onclick="openLore('lore2.html')">
+                    <span class="badge">Новое</span>
+                    <span class="icon">🧬</span>
+                    <div class="game-title">Half-Life: Backrooms 2</div>
+                    <div class="game-sub">Часть 2</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+
+               <!--Portal the void -->
+                <div class="game-card" onclick="openLore('lore3.html')">
+                    <span class="badge">Новое</span>
+                    <span class="icon">🌀</span>
+                    <div class="game-title">Portal : The Void</div>
+                    <div class="game-sub">Часть 1</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+
+
+                <!-- Пустые заготовки -->
+                <div class="game-card add-card">
+                    <span class="icon">➕</span>
+                    <div class="game-title" style="color:#667788;">Добавить</div>
+                    <div class="game-sub" style="color:#445566;">Новая хронология</div>
+                </div>
+
+            </div>
+
+            <div class="section-header" style="margin-top:10px;">
+                <h2>🆕 Недавно добавленные</h2>
+                <a href="#">Все новинки</a>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card" onclick="openLore('lore1.html')">
+                    <span class="icon">🧬</span>
+                    <div class="game-title">Half-Life: Backrooms</div>
+                    <div class="game-sub">Часть 1</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+                <div class="game-card" onclick="openLore('lore2.html')">
+                    <span class="icon">🧬</span>
+                    <div class="game-title">Half-Life: Backrooms 2</div>
+                    <div class="game-sub">Часть 2</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+                <div class="game-card" onclick="openLore('lore3.html')">
+                    <span class="icon">🌀</span>
+                    <div class="game-title">Portal : The Void</div>
+                    <div class="game-sub">Часть 1</div>
+                    <div class="game-rating">★★★★★</div>
+                </div>
+                <div class="game-card add-card" style="opacity:0.3;">
+                    <span class="icon">⏳</span>
+                    <div class="game-title" style="color:#445566;">Скоро</div>
+                    <div class="game-sub" style="color:#334455;">Ожидай...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- СТРАНИЦА ХРОНОЛОГИИ (загружается через iframe) -->
+        <div id="lorePage" class="lore-page">
+            <a href="#" class="lore-back" onclick="closeLore()">← Назад к хронологиям</a>
+            <iframe id="loreFrame" src="" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <footer>
+        <p>Fanlogya — магазин фанатских хронологий игр и вселенных</p>
+        <p style="font-size:0.8rem; margin-top:4px;">Сделано с <span class="heart">❤</span> Димой · 2026</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
