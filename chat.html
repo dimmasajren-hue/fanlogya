@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fanlogya — Чат</title>
+    <title>Fanlogya — Чат с группами</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ===== СТИЛИ ДЛЯ ЧАТА ===== */
+        /* ===== СТИЛИ ДЛЯ ЧАТА С ГРУППАМИ ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -20,93 +20,219 @@
         /* ===== ШАПКА ===== */
         header {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 12px 24px;
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #e94560;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         header .logo h1 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             background: linear-gradient(90deg, #e94560, #f5a623);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
         }
-        header .logo span {
-            font-size: 0.65rem;
-            color: #667788;
-        }
+        header .logo span { font-size: 0.6rem; color: #667788; }
         header .header-right {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         header .header-right a {
             color: #e94560;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
-        header .header-right a:hover {
-            text-decoration: underline;
-        }
+        header .header-right a:hover { text-decoration: underline; }
         .user-badge {
             background: #1a1a3a;
-            padding: 4px 14px;
+            padding: 3px 14px;
             border-radius: 30px;
             color: #e0e8f0;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border: 1px solid #2a2a4a;
         }
-        .user-badge .mod {
-            color: #f5a623;
-            font-weight: 700;
+        .user-badge .mod { color: #f5a623; font-weight: 700; }
+
+        /* ===== ОСНОВНАЯ СЕТКА ===== */
+        .chat-app {
+            display: flex;
+            flex: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 12px 16px;
+            width: 100%;
+            gap: 16px;
+            height: calc(100vh - 80px);
+            min-height: 400px;
         }
 
-        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
-        .chat-container {
-            flex: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 16px 20px;
-            width: 100%;
+        /* ===== БОКОВАЯ ПАНЕЛЬ (ГРУППЫ) ===== */
+        .side-panel {
+            width: 220px;
+            background: #0d0d1a;
+            border-radius: 16px;
+            border: 1px solid #1a1a3a;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 100px);
+            gap: 8px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .side-panel::-webkit-scrollbar { width: 4px; }
+        .side-panel::-webkit-scrollbar-thumb { background: #e94560; border-radius: 10px; }
+        .side-panel .panel-title {
+            color: #f5a623;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1a1a3a;
+        }
+        .group-item {
+            background: #111122;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .group-item:hover {
+            background: #1a1a3a;
+            border-color: #2a2a4a;
+        }
+        .group-item.active {
+            border-color: #e94560;
+            background: #1a1a3a;
+        }
+        .group-item .g-icon { font-size: 1.2rem; }
+        .group-item .g-name {
+            flex: 1;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e0e8f0;
+        }
+        .group-item .g-count {
+            font-size: 0.6rem;
+            color: #667788;
+            background: #1a1a30;
+            padding: 1px 8px;
+            border-radius: 20px;
+        }
+        .group-item .g-admin {
+            font-size: 0.55rem;
+            color: #f5a623;
+            background: #1a1a30;
+            padding: 1px 6px;
+            border-radius: 20px;
+        }
+        .group-item .g-delete {
+            background: transparent;
+            border: none;
+            color: #667788;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .group-item .g-delete:hover { color: #ef5350; }
+
+        .create-group-btn {
+            background: #e94560;
+            border: none;
+            border-radius: 30px;
+            padding: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: auto;
+        }
+        .create-group-btn:hover {
+            background: #ff5a7a;
+            transform: scale(1.02);
+        }
+        .create-group-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* ===== ОБЛАСТЬ СООБЩЕНИЙ ===== */
+        /* ===== ЧАТ ===== */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0d0d1a;
+            border-radius: 16px;
+            border: 1px solid #1a1a3a;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .chat-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid #1a1a3a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #0a0a18;
+        }
+        .chat-header .ch-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #f5a623;
+        }
+        .chat-header .ch-info {
+            font-size: 0.7rem;
+            color: #667788;
+        }
+        .chat-header .ch-actions button {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 2px 12px;
+            color: #667788;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .chat-header .ch-actions button:hover {
+            border-color: #e94560;
+            color: #e94560;
+        }
+
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            background: #0d0d1a;
-            border-radius: 16px;
-            padding: 16px 20px;
-            border: 1px solid #1a1a3a;
-            margin-bottom: 12px;
+            padding: 12px 16px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-height: 300px;
-            max-height: calc(100vh - 220px);
+            gap: 4px;
         }
         .messages-area::-webkit-scrollbar { width: 6px; }
         .messages-area::-webkit-scrollbar-thumb { background: #e94560; border-radius: 10px; }
         .messages-area::-webkit-scrollbar-track { background: #0a0a0a; }
 
-        /* ===== СООБЩЕНИЕ ===== */
         .message {
             background: #111122;
-            border-radius: 12px;
-            padding: 10px 14px;
+            border-radius: 10px;
+            padding: 8px 12px;
             border: 1px solid #1a1a3a;
             animation: fadeInMsg 0.2s ease;
         }
         @keyframes fadeInMsg {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .message .msg-header {
@@ -115,39 +241,37 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 4px;
-            margin-bottom: 2px;
         }
         .message .msg-author {
             color: #f5a623;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .message .msg-author .mod-tag {
             background: #f5a623;
             color: #0a0a0a;
-            font-size: 0.55rem;
-            padding: 1px 8px;
+            font-size: 0.5rem;
+            padding: 1px 6px;
             border-radius: 20px;
             font-weight: 700;
-            margin-left: 6px;
+            margin-left: 4px;
         }
         .message .msg-date {
             color: #445566;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
         }
         .message .msg-text {
             color: #c0d0e0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             word-wrap: break-word;
+            margin-top: 2px;
         }
-        .message .msg-actions {
-            margin-top: 4px;
-        }
+        .message .msg-actions { margin-top: 3px; }
         .message .msg-actions button {
             background: transparent;
             border: none;
             color: #667788;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             cursor: pointer;
             padding: 1px 8px;
             border-radius: 12px;
@@ -163,43 +287,49 @@
             text-align: center;
             color: #667788;
             font-style: italic;
+            font-size: 0.8rem;
+        }
+        .message.system-msg .msg-author { color: #667788; }
+
+        .no-messages {
+            text-align: center;
+            color: #445566;
+            padding: 30px 0;
             font-size: 0.85rem;
         }
-        .message.system-msg .msg-author {
-            color: #667788;
-        }
 
-        /* ===== ПОЛЕ ВВОДА ===== */
         .input-area {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            padding: 10px 16px;
+            border-top: 1px solid #1a1a3a;
+            background: #0a0a18;
             flex-wrap: wrap;
         }
         .input-area input {
             flex: 1;
-            padding: 10px 18px;
+            padding: 8px 16px;
             background: #1a1a30;
             border: 1px solid #2a2a4a;
             border-radius: 30px;
             color: #e0e0e0;
-            font-size: 0.95rem;
-            min-width: 150px;
+            font-size: 0.9rem;
+            min-width: 120px;
         }
         .input-area input:focus {
             outline: none;
             border-color: #e94560;
         }
-        .input-area input::placeholder {
-            color: #445566;
-        }
+        .input-area input::placeholder { color: #445566; }
+        .input-area input:disabled { opacity: 0.4; }
         .input-area button {
             background: #e94560;
             border: none;
             border-radius: 30px;
-            padding: 10px 28px;
+            padding: 8px 22px;
             color: #fff;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -213,25 +343,30 @@
             transform: none;
         }
 
-        /* ===== СТАТУС ===== */
         .chat-status {
+            font-size: 0.7rem;
             color: #667788;
-            font-size: 0.8rem;
+            padding: 2px 16px;
             text-align: center;
-            padding: 4px 0;
-        }
-        .chat-status .online {
-            color: #4caf50;
+            background: #0a0a18;
+            border-bottom: 1px solid #1a1a3a;
         }
 
         /* ===== АДАПТИВ ===== */
-        @media (max-width: 600px) {
-            header { padding: 10px 16px; }
-            .chat-container { padding: 10px 12px; height: calc(100vh - 80px); }
-            .messages-area { padding: 10px 14px; max-height: calc(100vh - 180px); }
-            .input-area input { font-size: 0.85rem; padding: 8px 14px; }
-            .input-area button { padding: 8px 18px; font-size: 0.85rem; }
-            .message .msg-text { font-size: 0.85rem; }
+        @media (max-width: 700px) {
+            .chat-app { flex-direction: column; padding: 8px 10px; height: calc(100vh - 70px); }
+            .side-panel { width: 100%; max-height: 140px; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; padding: 8px; gap: 6px; }
+            .side-panel .panel-title { display: none; }
+            .group-item { flex-shrink: 0; padding: 6px 10px; }
+            .group-item .g-name { font-size: 0.75rem; }
+            .create-group-btn { margin-top: 0; padding: 6px 12px; font-size: 0.7rem; }
+            .chat-main { min-height: 300px; }
+            .messages-area { padding: 8px 10px; }
+            .message { padding: 6px 10px; }
+            .message .msg-text { font-size: 0.8rem; }
+            .input-area { padding: 6px 10px; }
+            .input-area input { font-size: 0.8rem; padding: 6px 12px; }
+            .input-area button { padding: 6px 16px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -241,7 +376,7 @@
     <header>
         <div class="logo">
             <h1>💬 Fanlogya Chat</h1>
-            <span>Общайся с авторами хронологий</span>
+            <span>Общайся в группах</span>
         </div>
         <div class="header-right">
             <span class="user-badge" id="userBadge">👤 Гость</span>
@@ -250,22 +385,43 @@
     </header>
 
     <!-- ===== ЧАТ ===== -->
-    <div class="chat-container">
+    <div class="chat-app">
 
-        <div class="chat-status" id="chatStatus">
-            ⏳ Подключение к чату...
+        <!-- ===== БОКОВАЯ ПАНЕЛЬ ===== -->
+        <div class="side-panel" id="sidePanel">
+            <div class="panel-title">📋 Группы</div>
+            <div id="groupsList">
+                <div style="color:#445566;font-size:0.8rem;text-align:center;padding:10px 0;">⏳ Загрузка...</div>
+            </div>
+            <button class="create-group-btn" id="createGroupBtn" disabled>➕ Создать группу</button>
         </div>
 
-        <div class="messages-area" id="messagesArea">
-            <div style="text-align:center; color:#445566; padding:40px 0;">
-                💬 Загрузка сообщений...
+        <!-- ===== ОКНО ЧАТА ===== -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <div>
+                    <span class="ch-title" id="chatTitle">💬 Общий чат</span>
+                    <span class="ch-info" id="chatInfo">все пользователи</span>
+                </div>
+                <div class="ch-actions">
+                    <button id="leaveGroupBtn" style="display:none;" onclick="leaveGroup()">🚪 Покинуть</button>
+                </div>
+            </div>
+
+            <div class="chat-status" id="chatStatus">
+                🟢 Онлайн: <span class="online">●</span>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <div class="no-messages">💬 Загрузка сообщений...</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Написать сообщение..." maxlength="500" disabled>
+                <button id="sendBtn" disabled>➤ Отправить</button>
             </div>
         </div>
 
-        <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Написать сообщение..." maxlength="500" disabled>
-            <button id="sendBtn" disabled>➤ Отправить</button>
-        </div>
     </div>
 
     <!-- ============================================================
@@ -293,13 +449,15 @@
         const auth = firebase.auth();
 
         let currentUser = null;
+        let currentGroupId = 'global'; // 'global' или id группы
         let messagesUnsubscribe = null;
+        let groupsUnsubscribe = null;
 
         // ============================================================
         // МОДЕРАТОРЫ
         // ============================================================
         const MODERATORS = [
-            "CT2bmCrOKvV8NUT7OC1HYt3fhoR2"  // ← ЗАМЕНИ НА СВОЙ!
+            "ТВОЙ_UID_ИЗ_FIREBASE"  // ← ЗАМЕНИ НА СВОЙ!
         ];
 
         function isModerator(user) {
@@ -307,17 +465,28 @@
             return MODERATORS.includes(user.uid);
         }
 
+        function isGroupAdmin(group, user) {
+            if (!user) return false;
+            if (isModerator(user)) return true;
+            return group.adminId === user.uid;
+        }
+
         // ============================================================
-        // ЭЛЕМЕНТЫ
+        // DOM
         // ============================================================
         const messagesArea = document.getElementById('messagesArea');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const userBadge = document.getElementById('userBadge');
         const chatStatus = document.getElementById('chatStatus');
+        const chatTitle = document.getElementById('chatTitle');
+        const chatInfo = document.getElementById('chatInfo');
+        const groupsList = document.getElementById('groupsList');
+        const createGroupBtn = document.getElementById('createGroupBtn');
+        const leaveGroupBtn = document.getElementById('leaveGroupBtn');
 
         // ============================================================
-        // ФУНКЦИИ
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
         // ============================================================
         function escapeHtml(text) {
             if (!text) return '';
@@ -343,6 +512,92 @@
         }
 
         // ============================================================
+        // ЗАГРУЗКА ГРУПП
+        // ============================================================
+        function loadGroups() {
+            if (groupsUnsubscribe) {
+                groupsUnsubscribe();
+                groupsUnsubscribe = null;
+            }
+
+            groupsUnsubscribe = db.collection('chat_groups')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    const groups = [];
+                    snapshot.forEach(doc => {
+                        groups.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    if (groups.length === 0) {
+                        groupsList.innerHTML = `
+                            <div style="color:#445566;font-size:0.75rem;text-align:center;padding:8px 0;">
+                                📭 Нет групп<br>
+                                <span style="font-size:0.65rem;">Создай первую!</span>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let html = '';
+                    groups.forEach(g => {
+                        const isAdmin = currentUser && isGroupAdmin(g, currentUser);
+                        const isActive = currentGroupId === g.id;
+                        html += `
+                            <div class="group-item ${isActive ? 'active' : ''}" onclick="switchGroup('${g.id}')">
+                                <span class="g-icon">${g.icon || '💬'}</span>
+                                <span class="g-name">${escapeHtml(g.name)}</span>
+                                <span class="g-count">${g.memberCount || 0}</span>
+                                ${isAdmin ? '<span class="g-admin">👑</span>' : ''}
+                                ${isAdmin ? `<button class="g-delete" onclick="event.stopPropagation(); deleteGroup('${g.id}')">✖</button>` : ''}
+                            </div>
+                        `;
+                    });
+                    groupsList.innerHTML = html;
+                }, (error) => {
+                    console.error('Ошибка загрузки групп:', error);
+                    groupsList.innerHTML = `
+                        <div style="color:#e94560;font-size:0.75rem;text-align:center;padding:8px 0;">
+                            ❌ Ошибка загрузки
+                        </div>
+                    `;
+                });
+        }
+
+        // ============================================================
+        // ПЕРЕКЛЮЧЕНИЕ МЕЖДУ ГРУППАМИ
+        // ============================================================
+        function switchGroup(groupId) {
+            if (currentGroupId === groupId) return;
+            if (groupId === 'global') {
+                currentGroupId = 'global';
+                chatTitle.textContent = '💬 Общий чат';
+                chatInfo.textContent = 'все пользователи';
+                leaveGroupBtn.style.display = 'none';
+                loadMessages();
+                return;
+            }
+
+            // Проверяем, состоит ли пользователь в группе
+            if (currentUser) {
+                db.collection('chat_groups').doc(groupId).get().then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const members = data.members || [];
+                        if (members.includes(currentUser.uid) || isModerator(currentUser) || data.adminId === currentUser.uid) {
+                            currentGroupId = groupId;
+                            chatTitle.textContent = `${data.icon || '💬'} ${data.name}`;
+                            chatInfo.textContent = `👤 ${data.memberCount || 0} участников`;
+                            leaveGroupBtn.style.display = 'block';
+                            loadMessages();
+                        } else {
+                            alert('❌ Ты не участник этой группы!');
+                        }
+                    }
+                });
+            }
+        }
+
+        // ============================================================
         // ЗАГРУЗКА СООБЩЕНИЙ
         // ============================================================
         function loadMessages() {
@@ -351,13 +606,11 @@
                 messagesUnsubscribe = null;
             }
 
-            messagesArea.innerHTML = `
-                <div style="text-align:center; color:#445566; padding:40px 0;">
-                    ⏳ Загрузка сообщений...
-                </div>
-            `;
+            messagesArea.innerHTML = `<div class="no-messages">⏳ Загрузка...</div>`;
 
-            messagesUnsubscribe = db.collection('chat_messages')
+            const collection = currentGroupId === 'global' ? 'chat_messages' : `chat_groups/${currentGroupId}/messages`;
+
+            messagesUnsubscribe = db.collection(collection)
                 .orderBy('timestamp', 'asc')
                 .limit(100)
                 .onSnapshot((snapshot) => {
@@ -368,8 +621,9 @@
 
                     if (messages.length === 0) {
                         messagesArea.innerHTML = `
-                            <div style="text-align:center; color:#445566; padding:40px 0;">
-                                💬 Пока нет сообщений. Напиши первым!
+                            <div class="no-messages">
+                                💬 Пока нет сообщений.<br>
+                                <span style="font-size:0.75rem;color:#445566;">Напиши первым!</span>
                             </div>
                         `;
                         return;
@@ -412,14 +666,13 @@
 
                     messagesArea.innerHTML = html;
                     scrollToBottom();
-                    chatStatus.innerHTML = `💬 Сообщений: <strong>${messages.length}</strong> | 🟢 Онлайн: <span class="online">●</span>`;
                 }, (error) => {
                     console.error('Ошибка загрузки сообщений:', error);
                     messagesArea.innerHTML = `
-                        <div style="text-align:center; color:#e94560; padding:40px 0;">
-                            ❌ Ошибка загрузки сообщений: ${error.message}
-                            <br><br>
-                            <button onclick="loadMessages()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer;">🔄 Попробовать снова</button>
+                        <div class="no-messages" style="color:#e94560;">
+                            ❌ Ошибка загрузки: ${error.message}
+                            <br>
+                            <button onclick="loadMessages()" style="background:#e94560;border:none;color:#fff;padding:6px 20px;border-radius:30px;cursor:pointer;margin-top:6px;">🔄 Обновить</button>
                         </div>
                     `;
                 });
@@ -430,30 +683,32 @@
         // ============================================================
         async function sendMessage() {
             if (!currentUser) {
-                alert('❌ Войди в аккаунт, чтобы писать в чат!');
+                alert('❌ Войди в аккаунт!');
                 return;
             }
 
             const text = messageInput.value.trim();
             if (!text) return;
             if (text.length > 500) {
-                alert('❌ Сообщение слишком длинное (макс. 500 символов)');
+                alert('❌ Слишком длинное (макс. 500 символов)');
                 return;
             }
 
+            const msgData = {
+                text: text,
+                author: currentUser.displayName || currentUser.email || 'Пользователь',
+                authorId: currentUser.uid,
+                isMod: isModerator(currentUser),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
             try {
-                const msgData = {
-                    text: text,
-                    author: currentUser.displayName || currentUser.email || 'Пользователь',
-                    authorId: currentUser.uid,
-                    isMod: isModerator(currentUser),
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await db.collection('chat_messages').add(msgData);
+                const collection = currentGroupId === 'global' ? 'chat_messages' : `chat_groups/${currentGroupId}/messages`;
+                await db.collection(collection).add(msgData);
                 messageInput.value = '';
                 messageInput.focus();
             } catch (error) {
-                alert('❌ Ошибка отправки: ' + error.message);
+                alert('❌ Ошибка: ' + error.message);
             }
         }
 
@@ -468,7 +723,8 @@
             if (!confirm('🗑️ Удалить это сообщение?')) return;
 
             try {
-                const doc = await db.collection('chat_messages').doc(msgId).get();
+                const collection = currentGroupId === 'global' ? 'chat_messages' : `chat_groups/${currentGroupId}/messages`;
+                const doc = await db.collection(collection).doc(msgId).get();
                 if (!doc.exists) {
                     alert('❌ Сообщение не найдено');
                     return;
@@ -476,24 +732,166 @@
                 const data = doc.data();
                 const isMod = isModerator(currentUser);
                 if (!isMod && data.authorId !== currentUser.uid) {
-                    alert('❌ Ты не автор этого сообщения!');
+                    alert('❌ Ты не автор!');
                     return;
                 }
-                await db.collection('chat_messages').doc(msgId).delete();
+                await db.collection(collection).doc(msgId).delete();
             } catch (error) {
-                alert('❌ Ошибка удаления: ' + error.message);
+                alert('❌ Ошибка: ' + error.message);
             }
         }
 
         // ============================================================
-        // ОТПРАВКА ПО ENTER
+        // СОЗДАНИЕ ГРУППЫ
         // ============================================================
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        async function createGroup() {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
             }
-        });
+
+            const name = prompt('📌 Название группы:');
+            if (!name) return;
+            const icon = prompt('🎨 Иконка (эмодзи):', '💬') || '💬';
+
+            try {
+                const groupData = {
+                    name: name,
+                    icon: icon,
+                    adminId: currentUser.uid,
+                    adminName: currentUser.displayName || currentUser.email || 'Пользователь',
+                    members: [currentUser.uid],
+                    memberCount: 1,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                const docRef = await db.collection('chat_groups').add(groupData);
+                alert(`✅ Группа "${name}" создана!`);
+                currentGroupId = docRef.id;
+                chatTitle.textContent = `${icon} ${name}`;
+                chatInfo.textContent = '👤 1 участник';
+                leaveGroupBtn.style.display = 'block';
+                loadMessages();
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // ПРИСОЕДИНЕНИЕ К ГРУППЕ
+        // ============================================================
+        async function joinGroup(groupId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+
+            try {
+                const doc = await db.collection('chat_groups').doc(groupId).get();
+                if (!doc.exists) {
+                    alert('❌ Группа не найдена');
+                    return;
+                }
+                const data = doc.data();
+                const members = data.members || [];
+                if (members.includes(currentUser.uid)) {
+                    alert('✅ Ты уже в этой группе!');
+                    return;
+                }
+                members.push(currentUser.uid);
+                await db.collection('chat_groups').doc(groupId).update({
+                    members: members,
+                    memberCount: members.length
+                });
+                alert('✅ Ты присоединился к группе!');
+                switchGroup(groupId);
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // ВЫХОД ИЗ ГРУППЫ
+        // ============================================================
+        async function leaveGroup() {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            if (currentGroupId === 'global') return;
+
+            if (!confirm('🚪 Выйти из группы?')) return;
+
+            try {
+                const doc = await db.collection('chat_groups').doc(currentGroupId).get();
+                if (!doc.exists) {
+                    alert('❌ Группа не найдена');
+                    return;
+                }
+                const data = doc.data();
+                if (data.adminId === currentUser.uid) {
+                    alert('❌ Ты администратор! Сначала передай права или удали группу.');
+                    return;
+                }
+                let members = data.members || [];
+                members = members.filter(id => id !== currentUser.uid);
+                await db.collection('chat_groups').doc(currentGroupId).update({
+                    members: members,
+                    memberCount: members.length
+                });
+                alert('✅ Ты вышел из группы');
+                currentGroupId = 'global';
+                chatTitle.textContent = '💬 Общий чат';
+                chatInfo.textContent = 'все пользователи';
+                leaveGroupBtn.style.display = 'none';
+                loadMessages();
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================================
+        // УДАЛЕНИЕ ГРУППЫ (только администратор)
+        // ============================================================
+        async function deleteGroup(groupId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            if (!confirm('🗑️ Удалить группу? Это удалит все сообщения!')) return;
+
+            try {
+                const doc = await db.collection('chat_groups').doc(groupId).get();
+                if (!doc.exists) {
+                    alert('❌ Группа не найдена');
+                    return;
+                }
+                const data = doc.data();
+                if (data.adminId !== currentUser.uid && !isModerator(currentUser)) {
+                    alert('❌ Только администратор может удалить группу!');
+                    return;
+                }
+
+                // Удаляем все сообщения группы
+                const msgs = await db.collection(`chat_groups/${groupId}/messages`).get();
+                const batch = db.batch();
+                msgs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+
+                // Удаляем саму группу
+                await db.collection('chat_groups').doc(groupId).delete();
+
+                alert('✅ Группа удалена');
+                if (currentGroupId === groupId) {
+                    currentGroupId = 'global';
+                    chatTitle.textContent = '💬 Общий чат';
+                    chatInfo.textContent = 'все пользователи';
+                    leaveGroupBtn.style.display = 'none';
+                    loadMessages();
+                }
+            } catch (error) {
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
 
         // ============================================================
         // АВТОРИЗАЦИЯ
@@ -508,41 +906,50 @@
                 messageInput.disabled = false;
                 sendBtn.disabled = false;
                 messageInput.placeholder = 'Написать сообщение...';
+                createGroupBtn.disabled = false;
             } else {
                 userBadge.textContent = '👤 Гость';
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
-                messageInput.placeholder = '🔐 Войди, чтобы писать в чат';
-                chatStatus.innerHTML = '🔐 <a href="login.html" style="color:#e94560;">Войди</a>, чтобы участвовать в чате';
+                messageInput.placeholder = '🔐 Войди, чтобы писать';
+                createGroupBtn.disabled = true;
+                chatStatus.innerHTML = '🔐 <a href="login.html" style="color:#e94560;">Войди</a> в аккаунт';
             }
 
-            // Перезагружаем сообщения при смене пользователя
+            // Перезагружаем данные
             if (messagesUnsubscribe) {
                 messagesUnsubscribe();
                 messagesUnsubscribe = null;
             }
+            if (groupsUnsubscribe) {
+                groupsUnsubscribe();
+                groupsUnsubscribe = null;
+            }
+            loadGroups();
             loadMessages();
         });
 
         // ============================================================
-        // КНОПКА ОТПРАВКИ
+        // СОБЫТИЯ
         // ============================================================
         sendBtn.addEventListener('click', sendMessage);
-
-        // ============================================================
-        // СБОРЩИК МУСОРА ПРИ ЗАКРЫТИИ
-        // ============================================================
-        window.addEventListener('beforeunload', () => {
-            if (messagesUnsubscribe) {
-                messagesUnsubscribe();
-                messagesUnsubscribe = null;
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
         });
+        createGroupBtn.addEventListener('click', createGroup);
 
         // ============================================================
-        // СТАРТ
+        // ЗАКРЫТИЕ ПОДПИСОК
         // ============================================================
-        console.log('💬 Fanlogya Chat загружен!');
+        window.addEventListener('beforeunload', () => {
+            if (messagesUnsubscribe) messagesUnsubscribe();
+            if (groupsUnsubscribe) groupsUnsubscribe();
+        });
+
+        console.log('💬 Fanlogya Chat с группами загружен!');
     </script>
 
 </body>
