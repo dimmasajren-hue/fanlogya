@@ -90,6 +90,10 @@
             background: #ff5a7a;
             transform: scale(1.02);
         }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .btn-secondary {
             background: #1a1a3a;
             color: #e0e8f0;
@@ -140,6 +144,31 @@
             border-color: #f5a623;
             background: #2a2a4a;
         }
+        .status-message {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-top: 16px;
+            display: none;
+        }
+        .status-message.success {
+            background: #0f3460;
+            border: 1px solid #e94560;
+            display: block;
+        }
+        .status-message.error {
+            background: #3a0a0a;
+            border: 1px solid #e94560;
+            display: block;
+        }
+        .status-message.loading {
+            background: #1a1a3a;
+            border: 1px solid #f5a623;
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @media (max-width:700px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -175,7 +204,16 @@
             <p>Придумай альтернативную вселенную и поделись с миром!</p>
         </div>
 
+        <!-- Статусное сообщение -->
+        <div id="statusMessage" class="status-message"></div>
+
         <form id="loreForm">
+
+            <!-- Имя автора -->
+            <div class="form-group">
+                <label for="author">👤 Твоё имя (ник)</label>
+                <input type="text" id="author" placeholder="Например: Дима" value="Фанат Fanlogya">
+            </div>
 
             <!-- Название -->
             <div class="form-group">
@@ -231,6 +269,9 @@
                     <button onclick="selectEmoji('🌕')">🌕</button>
                     <button onclick="selectEmoji('🔮')">🔮</button>
                     <button onclick="selectEmoji('⚔️')">⚔️</button>
+                    <button onclick="selectEmoji('🧪')">🧪</button>
+                    <button onclick="selectEmoji('🔭')">🔭</button>
+                    <button onclick="selectEmoji('📡')">📡</button>
                 </div>
                 <div class="hint">Нажми «Выбрать», чтобы открыть список эмодзи</div>
             </div>
@@ -240,7 +281,7 @@
                 <label for="content">📝 Текст хронологии</label>
                 <textarea id="content" placeholder="Напиши свою хронологию здесь... Используй # для заголовков, * для выделения, - для списков."></textarea>
                 <div class="hint">
-                    💡 Форматирование: <strong>#</strong> — заголовок, <strong>*текст*</strong> — курсив, 
+                    💡 Форматирование: <strong>#</strong> — заголовок, <strong>*текст*</strong> — курсив,
                     <strong>-</strong> — список, <strong>---</strong> — разделитель
                 </div>
             </div>
@@ -248,7 +289,7 @@
             <!-- Кнопки -->
             <div class="btn-group">
                 <button type="button" class="btn btn-primary" onclick="previewLore()">👁️ Предпросмотр</button>
-                <button type="button" class="btn btn-primary" onclick="publishLore()">💾 Опубликовать</button>
+                <button type="button" class="btn btn-primary" id="publishBtn" onclick="publishLore()">💾 Опубликовать</button>
                 <button type="button" class="btn btn-secondary" onclick="clearForm()">🗑️ Очистить</button>
             </div>
 
@@ -260,13 +301,6 @@
             <div id="previewContent"></div>
         </div>
 
-        <!-- Сообщение об успехе -->
-        <div id="successMessage" style="display:none; background:#0f3460; border-radius:16px; padding:30px; text-align:center; margin-top:20px; border:1px solid #e94560;">
-            <h2 style="color:#f5a623;">🎉 Хронология опубликована!</h2>
-            <p style="color:#99aabb; margin:10px 0;">Твоя хронология появилась в библиотеке. Поделись ссылкой с друзьями!</p>
-            <button class="btn btn-primary" onclick="location.reload()">📚 Создать ещё</button>
-        </div>
-
     </div>
 
     <footer>
@@ -274,7 +308,32 @@
         <p style="font-size:0.8rem; margin-top:4px;">Сделано с ❤️ Димой · 2026</p>
     </footer>
 
+    <!-- ============================================================
+    ПОДКЛЮЧЕНИЕ FIREBASE
+    ============================================================ -->
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
+        // ===== ВСТАВЬ СВОЙ КОНФИГ FIREBASE =====
+        const firebaseConfig = {
+           apiKey: "AIzaSyCLNZLQA2c3dMtj5Z5tiLmEPD4zixi0gFc",
+           authDomain: "fanlogya.firebaseapp.com",
+           projectId: "fanlogya",
+           storageBucket: "fanlogya.firebasestorage.app",
+           messagingSenderId: "448128302344",
+           appId: "1:448128302344:web:8f869fca95f1b00a1700bd"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ============================================================
+        // ЛОГИКА РЕДАКТОРА
+        // ============================================================
+
         // ===== ВЫБОР ЭМОДЗИ =====
         function toggleEmojiPicker() {
             const picker = document.getElementById('emojiPicker');
@@ -293,6 +352,7 @@
             const content = document.getElementById('content').value || 'Напиши текст...';
             const universe = document.getElementById('universe').value || 'Неизвестная вселенная';
             const genre = document.getElementById('genre').value;
+            const author = document.getElementById('author').value || 'Аноним';
 
             let html = `
                 <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
@@ -301,6 +361,7 @@
                         <h2 style="color:#f5a623; font-size:1.8rem;">${title}</h2>
                         <p style="color:#8899aa;">${universe}</p>
                         <span style="background:#1a1a3a; padding:2px 14px; border-radius:20px; font-size:0.75rem; color:#99aabb;">${genre}</span>
+                        <span style="background:#1a1a3a; padding:2px 14px; border-radius:20px; font-size:0.75rem; color:#99aabb; margin-left:6px;">👤 ${author}</span>
                     </div>
                 </div>
                 <hr style="border-color:#1a1a3a; margin-bottom:20px;">
@@ -313,36 +374,19 @@
 
         // ===== ПРОСТОЙ ПАРСЕР МАРКДАУНА =====
         function renderMarkdown(text) {
-            // Экранируем HTML
             text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            
-            // Заголовки #, ##, ###
             text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
             text = text.replace(/^## (.*$)/gim, '<h3>$1</h3>');
             text = text.replace(/^# (.*$)/gim, '<h2 style="color:#f5a623;">$1</h2>');
-            
-            // Курсив *текст*
-            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            
-            // Жирный **текст**
             text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            // Списки - пункт
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
             text = text.replace(/^- (.*$)/gim, '<li>$1</li>');
             text = text.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-            
-            // Нумерованные списки 1. пункт
             text = text.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
             text = text.replace(/(<li>.*<\/li>\n?)+/g, '<ol>$&</ol>');
-            
-            // Разделитель ---
             text = text.replace(/---/g, '<hr style="border-color:#2a2a4a; margin:20px 0;">');
-            
-            // Абзацы
             text = text.replace(/\n\n/g, '</p><p>');
-            text = '<p>' + text + '</p>';
-            
-            return text;
+            return '<p>' + text + '</p>';
         }
 
         // ===== ОЧИСТКА ФОРМЫ =====
@@ -351,54 +395,71 @@
             document.getElementById('universe').value = '';
             document.getElementById('icon').value = '🧬';
             document.getElementById('content').value = '';
+            document.getElementById('author').value = 'Фанат Fanlogya';
             document.getElementById('previewArea').classList.remove('active');
-            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('statusMessage').className = 'status-message';
+            document.getElementById('statusMessage').textContent = '';
         }
 
-        // ===== ПУБЛИКАЦИЯ =====
-        function publishLore() {
+        // ===== ПУБЛИКАЦИЯ В FIREBASE =====
+        async function publishLore() {
             const title = document.getElementById('title').value.trim();
             if (!title) {
-                alert('❌ Пожалуйста, введи название хронологии!');
+                showStatus('❌ Пожалуйста, введи название хронологии!', 'error');
                 return;
             }
-            
+
             const content = document.getElementById('content').value.trim();
             if (!content) {
-                alert('❌ Пожалуйста, напиши текст хронологии!');
+                showStatus('❌ Пожалуйста, напиши текст хронологии!', 'error');
                 return;
             }
 
-            // Собираем данные
-            const loreData = {
-                id: Date.now(),
-                title: title,
-                universe: document.getElementById('universe').value || 'Неизвестная вселенная',
-                genre: document.getElementById('genre').value,
-                icon: document.getElementById('icon').value || '📖',
-                author: 'Фанат Fanlogya',
-                date: new Date().toLocaleDateString('ru-RU'),
-                content: content
-            };
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = true;
+            publishBtn.textContent = '⏳ Публикация...';
 
-            // Сохраняем в localStorage (пока что, потом будет на сервер)
-            let library = JSON.parse(localStorage.getItem('fanlogya_library') || '[]');
-            library.push(loreData);
-            localStorage.setItem('fanlogya_library', JSON.stringify(library));
+            showStatus('⏳ Отправка в облако Firebase...', 'loading');
 
-            // Показываем успех
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('previewArea').classList.remove('active');
-            
-            // Очищаем форму
-            clearForm();
-            
-            // Обновляем счётчик на главной
-            if (window.opener) {
-                try {
-                    window.opener.updateLibrary();
-                } catch(e) {}
+            try {
+                const loreData = {
+                    title: title,
+                    universe: document.getElementById('universe').value || 'Неизвестная вселенная',
+                    genre: document.getElementById('genre').value,
+                    icon: document.getElementById('icon').value || '📖',
+                    author: document.getElementById('author').value || 'Аноним',
+                    date: new Date().toLocaleDateString('ru-RU'),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    content: content
+                };
+
+                // Сохраняем в Firestore
+                await db.collection('lores').add(loreData);
+
+                showStatus('🎉 Хронология успешно опубликована в облаке! Теперь её увидят все!', 'success');
+                clearForm();
+
+                // Обновляем библиотеку на главной
+                if (window.opener) {
+                    try {
+                        window.opener.loadLibrary();
+                    } catch (e) {}
+                }
+
+            } catch (error) {
+                console.error('Ошибка публикации:', error);
+                showStatus('❌ Ошибка при публикации: ' + error.message, 'error');
             }
+
+            publishBtn.disabled = false;
+            publishBtn.textContent = '💾 Опубликовать';
+        }
+
+        // ===== ПОКАЗАТЬ СТАТУС =====
+        function showStatus(message, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = message;
+            el.className = 'status-message ' + type;
         }
 
         // ===== КЛИК ВНЕ ЭМОДЗИ-ПИКЕРА =====
