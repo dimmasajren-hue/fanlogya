@@ -1120,7 +1120,15 @@
                             ` : ''}
                             ${isOwner && !isMod ? `
                                 <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:4px 14px; color:#e94560; cursor:pointer; font-size:0.75rem;">🗑️ Удалить</button>
+
                             ` : ''}
+                            ${isOwner ? `
+                                <div class="lore-actions" onclick="event.stopPropagation();">
+                                    <button onclick="editLore('${lore.id}')" class="edit">✏️ Редактировать</button>
+                                    <button onclick="deleteLore('${lore.id}')" class="danger">🗑️ Удалить</button>
+                                </div>
+                            ` : ''}
+
                         </div>
                         <div class="lore-meta">
                             <span>📅 ${lore.date || 'Неизвестно'}</span>
@@ -1139,7 +1147,12 @@
                         <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer; margin-top:10px;">Закрыть</button>
                     </div>
                 `;
+
+                // В карточке хронологии, где показываются действия
+            
+
             }
+
         }
 
         // ============================================================
@@ -1180,11 +1193,16 @@
             }
         }
 
+
         // ============================================================
         // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
         // ============================================================
         function closeLoreViewer() {
             document.getElementById('loreViewerOverlay').classList.remove('active');
+        }
+
+        function editLore(loreId) {
+          window.location.href = `edit.html?id=${loreId}`;
         }
 
         function renderMarkdown(text) {
