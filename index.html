@@ -373,6 +373,11 @@
             background: #f5a623;
             color: #0a0a0a;
         }
+        .lore-actions button.edit:hover {
+            border-color: #f5a623;
+            background: #f5a623;
+            color: #0a0a0a;
+        }
 
         /* ===== АДМИН-ПАНЕЛЬ ===== */
         .admin-panel {
@@ -916,6 +921,8 @@
                     });
                 });
 
+                console.log('📚 Загружено хронологий:', lores.length);
+
                 const sorted = [...lores].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
                 if (sorted.length === 0) {
@@ -959,6 +966,7 @@
                                 <div class="lore-actions" onclick="event.stopPropagation();">
                                     ${isMod || isOwner ? `<button onclick="deleteLore('${lore.id}')" class="danger">🗑️ Удалить</button>` : ''}
                                     ${isMod ? `<button onclick="pinLore('${lore.id}')" class="pin">📌 ${lore.pinned ? 'Открепить' : 'Закрепить'}</button>` : ''}
+                                    ${isOwner && !isMod ? `<button onclick="editLore('${lore.id}')" class="edit">✏️ Редактировать</button>` : ''}
                                 </div>
                             ` : ''}
                         </div>
@@ -1056,11 +1064,24 @@
         }
 
         // ============================================================
-        // ОТКРЫТИЕ
+        // РЕДАКТИРОВАНИЕ
+        // ============================================================
+        function editLore(loreId) {
+            if (!currentUser) {
+                alert('❌ Войди в аккаунт!');
+                return;
+            }
+            window.location.href = `edit.html?id=${loreId}`;
+        }
+
+        // ============================================================
+        // ОТКРЫТИЕ ХРОНОЛОГИИ
         // ============================================================
         async function openLoreById(id) {
             const overlay = document.getElementById('loreViewerOverlay');
             const content = document.getElementById('loreViewerContent');
+
+            console.log('🔍 Открываю хронологию с ID:', id);
 
             overlay.classList.add('active');
             content.innerHTML = `
@@ -1120,15 +1141,8 @@
                             ` : ''}
                             ${isOwner && !isMod ? `
                                 <button onclick="deleteLore('${loreId}')" style="background:transparent; border:1px solid #e94560; border-radius:20px; padding:4px 14px; color:#e94560; cursor:pointer; font-size:0.75rem;">🗑️ Удалить</button>
-
+                                <button onclick="editLore('${loreId}')" style="background:transparent; border:1px solid #f5a623; border-radius:20px; padding:4px 14px; color:#f5a623; cursor:pointer; font-size:0.75rem;">✏️ Редактировать</button>
                             ` : ''}
-                            ${isOwner ? `
-                                <div class="lore-actions" onclick="event.stopPropagation();">
-                                    <button onclick="editLore('${lore.id}')" class="edit">✏️ Редактировать</button>
-                                    <button onclick="deleteLore('${lore.id}')" class="danger">🗑️ Удалить</button>
-                                </div>
-                            ` : ''}
-
                         </div>
                         <div class="lore-meta">
                             <span>📅 ${lore.date || 'Неизвестно'}</span>
@@ -1147,12 +1161,7 @@
                         <button onclick="closeLoreViewer()" style="background:#e94560; border:none; color:#fff; padding:8px 24px; border-radius:30px; cursor:pointer; margin-top:10px;">Закрыть</button>
                     </div>
                 `;
-
-                // В карточке хронологии, где показываются действия
-            
-
             }
-
         }
 
         // ============================================================
@@ -1193,16 +1202,11 @@
             }
         }
 
-
         // ============================================================
         // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
         // ============================================================
         function closeLoreViewer() {
             document.getElementById('loreViewerOverlay').classList.remove('active');
-        }
-
-        function editLore(loreId) {
-          window.location.href = `edit.html?id=${loreId}`;
         }
 
         function renderMarkdown(text) {
